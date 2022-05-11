@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.main.app.mapper.admin.supervisor.ManagerSetMenuMapper">
+
+    <select id="Manager_Menu_S1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_S1_Str (
+                #{authGroupSeq},
+                #{authGroupName},
+                #{useYn},
+                #{menuLevel},
+                #{menuSeq}
+            )
+            }
+    </select>
+    <select id="Manager_Menu_i1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_i1_Str (
+                #{set_icon},
+                #{displayYn},
+                #{displayOrder},
+                #{parentMenuSeq},
+                #{menuName},
+                #{programUrl},
+                #{programParameter},
+                #{loginUserSeq}
+            )
+            }
+    </select>
+    <select id="Manager_Menu_U1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_U1_Str (
+                #{set_icon},
+                #{displayYn},
+                #{displayOrder},
+                #{parentMenuSeq},
+                #{menuSeq},
+                #{menuName},
+                #{programUrl},
+                #{programParameter},
+                #{loginUserSeq}
+            )
+            }
+    </select>
+    <select id="Manager_Menu_U2_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_U2_Str (
+                #{displayOrder},
+                #{menuSeq},
+                #{loginUserSeq}
+            )
+            }
+    </select>
+</mapper>

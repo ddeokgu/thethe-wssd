@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.member.AdminUserMemberMapper">
+
+    <select id="adminUserMemberCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_member_user tmu
+        where tmu.DLT_YN != 'Y'
+          and tmu.MB_TYPE != 'M'
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "MU_NAME"'>
+                and tmu.MU_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "MU_ID"'>
+                and tmu.MU_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "MU_GENDER"'>
+                and tmu.MU_GENDER like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+    </select>
+
+    <select id="adminUserMemberDeleteCheck" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_regist tr
+        where tr.DLT_YN != 'Y'
+        and #{DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE
+        and tr.REGIST_MU_CD = #{mbCd};
+    </select>
+
+    <select id="adminUserMemberList" parameterType="Map" resultType="Record">
+        select tmu.MU_SEQ,
+               tmu.MU_ID,
+               tmu.MU_CD,
+               tmu.MU_NAME,
+               tmu.MU_GENDER,
+               tmu.MU_ZIP,
+               tmu.MU_ADDRESS,
+               tmu.MU_PHONE,
+               DATE_FORMAT(tmu.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from tb_member_user tmu
+        where tmu.DLT_YN != 'Y'
+         and tmu.MB_TYPE != 'M'
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "MU_NAME"'>
+                and tmu.MU_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "MU_ID"'>
+                and tmu.MU_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "MU_GENDER"'>
+                and tmu.MU_GENDER like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        order by tmu.REG_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <update id="adminUserMemberDelete" parameterType="Map">
+        update tb_member_user
+        set DLT_YN = 'Y', DLT_DATE = NOW()
+        where MU_CD = #{mbCd}
+        and MU_SEQ = #{loginUserSeq}
+    </update>
+
+
+
+</mapper>

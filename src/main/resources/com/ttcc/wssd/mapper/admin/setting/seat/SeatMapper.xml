@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.seat.SeatMapper">
+
+    <select id="seatList" parameterType="Map" resultType="Record">
+        select ts.*, tr.REGIST_SEAT
+        from TB_SEAT ts
+        left outer join TB_REGIST tr
+        on ts.SEAT_SEQ = tr.REGIST_SEAT
+        and tr.REGIST_ROOM = #{ROOM_CODE}
+        and tr.DLT_YN != 'Y'
+        and #{DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE
+        where ts.ROOM_CODE = #{ROOM_CODE}
+        and ts.DLT_YN != 'Y'
+        order by ts.SEAT_SEQ asc, ts.SEAT_NAME asc
+    </select>
+
+   <insert id="seatRegist" parameterType="Map" >
+           insert into TB_SEAT (SEAT_NAME, ROOM_CODE, REG_ID, REG_DATE)
+           values
+       <foreach collection="seatNoList" separator="," item="item">
+            (#{item}, #{ROOM_CODE}, #{REG_ID}, NOW())
+       </foreach>
+   </insert>
+
+    <insert id="seatRegistOne" parameterType="Map" >
+        {CALL SEAT_REGIST_ONE(#{SEAT_NAME}, #{ROOM_CODE}, #{REG_ID})}
+    </insert>
+
+
+    <update id="seatDelete" parameterType="Map">
+        update TB_SEAT set DLT_YN = 'Y' , DLT_ID = #{DLT_ID}, DLT_DATE = NOW()
+        where ROOM_CODE = #{ROOM_CODE}
+    </update>
+
+    <update id="seatDeleteOne" parameterType="Map">
+        {CALL SEAT_DELETE_ONE(#{SEAT_SEQ}, #{ROOM_CODE}, #{ID})}
+    </update>
+
+    <update id="seatStatusUpdate" parameterType="Map">
+        update TB_SEAT set SEAT_STATUS = #{SEAT_STATUS}, SEAT_NAME = #{SEAT_NAME}
+        where ROOM_CODE = #{ROOM_CODE} and SEAT_SEQ = #{SEAT_SEQ};
+    </update>
+
+
+ </mapper>

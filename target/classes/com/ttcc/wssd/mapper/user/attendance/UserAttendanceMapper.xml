@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.user.attendance.UserAttendanceMapper">
+
+    <select id="userAttendanceList" parameterType="Map" resultType="Record">
+        select ta.*, tc.CHANNEL_NAME, tr.ROOM_NAME
+        from tb_attendance ta
+        left outer join tb_channel tc
+        on ta.ATTENDANCE_CHANNEL = tc.CHANNEL_CODE
+            and tc.DLT_YN != 'Y'
+        left outer join tb_room tr
+        on ta.ATTENDANCE_ROOM = tr.ROOM_CODE
+            and tr.DLT_YN != 'Y'
+        where ta.ATTENDANCE_MU_CD = #{ATTENDANCE_MU_CD}
+          and ta.ATTENDANCE_ROOM = #{REGIST_ROOM}
+        and ta.ATTENDANCE_DATE between #{start} and #{end}
+        order by ta.ATTENDANCE_DATE asc;
+    </select>
+
+</mapper>

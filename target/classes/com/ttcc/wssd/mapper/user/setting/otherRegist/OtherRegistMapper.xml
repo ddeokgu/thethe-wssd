@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.user.setting.otherRegist.OtherRegistMapper">
+
+    <select id="otherRegistCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_other_regist tor
+        where tor.DLT_YN != 'Y'
+         and  tor.OTHER_REGIST_MU_CD = #{MU_CD}
+         and (tor.OTHER_REGIST_TYPE = 'A' or tor.OTHER_REGIST_DATE >= #{TODAY})
+    </select>
+
+    <select id="otherRegistHistoryCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_other_regist tor
+        where tor.DLT_YN != 'Y'
+          and tor.OTHER_REGIST_TYPE = 'B'
+          and  tor.OTHER_REGIST_MU_CD = #{MU_CD}
+          and  tor.OTHER_REGIST_DATE &lt; #{TODAY}
+    </select>
+
+    <select id="otherRegistHistoryExcCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_other_regist_exc tore
+        where tore.DLT_YN != 'Y'
+          and  tore.MU_CD = #{MU_CD}
+          and  tore.OTHER_REGIST_EXC_DATE &lt; #{TODAY}
+    </select>
+
+    <select id="otherRegistList" parameterType="Map" resultType="Record">
+        select tor.OTHER_REGIST_SEQ,
+               tor.OTHER_REGIST_TYPE,
+               DATE_FORMAT(tor.OTHER_REGIST_DATE, '%Y-%m-%d') as OTHER_REGIST_DATE,
+               tor.OTHER_REGIST_DAY,
+               tor.OTHER_REGIST_SUB,
+               tor.OTHER_REGIST_START,
+               tor.OTHER_REGIST_END,
+               tor.OTHER_REGIST_OUT,
+               tor.OTHER_REGIST_COME,
+               tor.OTHER_REGIST_DEPART,
+               tor.OTHER_REGIST_ARRIVE,
+               (select count(*)
+               from tb_other_regist_exc tore
+               where tor.OTHER_REGIST_SEQ = tore.OTHER_REGIST_SEQ
+                 and tore.DLT_YN != 'Y'
+                 and tore.OTHER_REGIST_EXC_DATE >= #{TODAY}
+                 and tore.MU_CD = #{MU_CD}) EXC_COUNT
+        from tb_other_regist tor
+        where tor.DLT_YN != 'Y'
+          and tor.OTHER_REGIST_MU_CD = #{MU_CD}
+          and (tor.OTHER_REGIST_TYPE = 'A' or tor.OTHER_REGIST_DATE >= #{TODAY})
+        order by tor.REG_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <select id="otherRegistHistoryList" parameterType="Map" resultType="Record">
+        select tor.OTHER_REGIST_SEQ as SEQ,
+               tor.OTHER_REGIST_TYPE,
+               DATE_FORMAT(tor.OTHER_REGIST_DATE, '%Y-%m-%d') as OTHER_REGIST_DATE,
+               tor.OTHER_REGIST_DAY,
+               tor.OTHER_REGIST_SUB,
+               tor.OTHER_REGIST_START,
+               tor.OTHER_REGIST_END,
+               tor.OTHER_REGIST_OUT,
+               tor.OTHER_REGIST_COME
+        from tb_other_regist tor
+        where tor.DLT_YN != 'Y'
+          and tor.OTHER_REGIST_TYPE = 'B'
+          and tor.OTHER_REGIST_MU_CD = #{MU_CD}
+          and tor.OTHER_REGIST_DATE &lt; #{TODAY}
+
+        UNION ALL
+
+        select tore.OTHER_REGIST_EXC_SEQ as SEQ,
+               tore.OTHER_REGIST_TYPE,
+               DATE_FORMAT(tore.OTHER_REGIST_EXC_DATE, '%Y-%m-%d') as OTHER_REGIST_DATE,
+               tore.OTHER_REGIST_EXC_DAY as OTHER_REGIST_DAY,
+               tore.OTHER_REGIST_EXC_SUB as OTHER_REGIST_SUB,
+               tore.OTHER_REGIST_EXC_START as OTHER_REGIST_START,
+               tore.OTHER_REGIST_EXC_END as OTHER_REGIST_END,
+               tore.OTHER_REGIST_EXC_OUT as OTHER_REGIST_OUT,
+               tore.OTHER_REGIST_EXC_COME as OTHER_REGIST_COME
+        from tb_other_regist_exc tore
+        where tore.DLT_YN != 'Y'
+        and tore.OTHER_REGIST_EXC_DATE &lt; #{TODAY}
+        and tore.MU_CD = #{MU_CD}
+        order by OTHER_REGIST_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+
+    <select id="otherRegistExcHistoryList" parameterType="Map" resultType="Record">
+        select  tore.OTHER_REGIST_EXC_SEQ,
+                tore.OTHER_REGIST_SEQ,
+                DATE_FORMAT(tore.OTHER_REGIST_EXC_DATE, '%Y-%m-%d') as OTHER_REGIST_EXC_DATE,
+                tore.OTHER_REGIST_EXC_DES,
+                tore.OTHER_REGIST_EXC_DAY,
+                tore.OTHER_REGIST_EXC_SUB,
+                tore.OTHER_REGIST_EXC_START,
+                tore.OTHER_REGIST_EXC_END
+        from tb_other_regist_exc tore
+        where tore.DLT_YN != 'Y'
+          and tore.OTHER_REGIST_EXC_DATE &lt; #{TODAY}
+          and tore.MU_CD = #{MU_CD}
+    </select>
+
+
+    <select id="otherRegistExcList" parameterType="Map" resultType="Record">
+        select  tore.OTHER_REGIST_EXC_SEQ,
+                tore.OTHER_REGIST_SEQ,
+                DATE_FORMAT(tore.OTHER_REGIST_EXC_DATE, '%Y-%m-%d') as OTHER_REGIST_EXC_DATE,
+                tore.OTHER_REGIST_EXC_DES
+        from tb_other_regist_exc tore
+        where tore.DLT_YN != 'Y'
+         and tore.OTHER_REGIST_EXC_DATE >= #{TODAY}
+         and tore.MU_CD = #{MU_CD}
+    </select>
+
+    <insert id="otherRegistInsert" parameterType="Map">
+        insert into TB_OTHER_REGIST (
+        <if test="OTHER_REGIST_TYPE != null and OTHER_REGIST_TYPE != ''">OTHER_REGIST_TYPE,</if>
+        <if test="OTHER_REGIST_DAY != null and OTHER_REGIST_DAY != ''">OTHER_REGIST_DAY,</if>
+        <if test="OTHER_REGIST_DATE != null and OTHER_REGIST_DATE != ''">OTHER_REGIST_DATE,</if>
+        <if test="OTHER_REGIST_SUB != null and OTHER_REGIST_SUB != ''">OTHER_REGIST_SUB,</if>
+        <if test="OTHER_REGIST_START != null and OTHER_REGIST_START != ''">OTHER_REGIST_START,</if>
+        <if test="OTHER_REGIST_END != null and OTHER_REGIST_END != ''">OTHER_REGIST_END,</if>
+        <if test="OTHER_REGIST_ARRIVE != null and OTHER_REGIST_ARRIVE != ''">OTHER_REGIST_ARRIVE,</if>
+        <if test="OTHER_REGIST_DEPART != null and OTHER_REGIST_DEPART != ''">OTHER_REGIST_DEPART,</if>
+        <if test="OTHER_REGIST_OUT != null and OTHER_REGIST_OUT != ''">OTHER_REGIST_OUT,</if>
+        <if test="OTHER_REGIST_COME != null and OTHER_REGIST_COME != ''">OTHER_REGIST_COME,</if>
+        <if test="OTHER_REGIST_MU_CD != null and OTHER_REGIST_MU_CD != ''">OTHER_REGIST_MU_CD,</if>
+        <if test="REG_ID != null and REG_ID != ''">REG_ID,</if>
+        REG_DATE
+        )
+        values
+        (
+        <if test="OTHER_REGIST_TYPE != null and OTHER_REGIST_TYPE != ''">#{OTHER_REGIST_TYPE},</if>
+        <if test="OTHER_REGIST_DAY != null and OTHER_REGIST_DAY != ''">#{OTHER_REGIST_DAY},</if>
+        <if test="OTHER_REGIST_DATE != null and OTHER_REGIST_DATE != ''">#{OTHER_REGIST_DATE},</if>
+        <if test="OTHER_REGIST_SUB != null and OTHER_REGIST_SUB != ''">#{OTHER_REGIST_SUB},</if>
+        <if test="OTHER_REGIST_START != null and OTHER_REGIST_START != ''">#{OTHER_REGIST_START},</if>
+        <if test="OTHER_REGIST_END != null and OTHER_REGIST_END != ''">#{OTHER_REGIST_END},</if>
+        <if test="OTHER_REGIST_ARRIVE != null and OTHER_REGIST_ARRIVE != ''">#{OTHER_REGIST_ARRIVE},</if>
+        <if test="OTHER_REGIST_DEPART != null and OTHER_REGIST_DEPART != ''">#{OTHER_REGIST_DEPART},</if>
+        <if test="OTHER_REGIST_OUT != null and OTHER_REGIST_OUT != ''">#{OTHER_REGIST_OUT},</if>
+        <if test="OTHER_REGIST_COME != null and OTHER_REGIST_COME != ''">#{OTHER_REGIST_COME},</if>
+        <if test="OTHER_REGIST_MU_CD != null and OTHER_REGIST_MU_CD != ''">#{OTHER_REGIST_MU_CD},</if>
+        <if test="REG_ID != null and REG_ID != ''">#{REG_ID},</if>
+        NOW()
+        )
+    </insert>
+
+    <insert id="otherRegistExcInsert" parameterType="Map">
+        insert into TB_OTHER_REGIST_EXC (
+        <if test="OTHER_REGIST_SEQ != null and OTHER_REGIST_SEQ != ''">OTHER_REGIST_SEQ,</if>
+        <if test="OTHER_REGIST_EXC_DATE != null and OTHER_REGIST_EXC_DATE != ''">OTHER_REGIST_EXC_DATE,</if>
+        <if test="OTHER_REGIST_EXC_DES != null and OTHER_REGIST_EXC_DES != ''">OTHER_REGIST_EXC_DES,</if>
+        <if test="OTHER_REGIST_EXC_SUB != null and OTHER_REGIST_EXC_SUB != ''">OTHER_REGIST_EXC_SUB,</if>
+        <if test="OTHER_REGIST_EXC_START != null and OTHER_REGIST_EXC_START != ''">OTHER_REGIST_EXC_START,</if>
+        <if test="OTHER_REGIST_EXC_END != null and OTHER_REGIST_EXC_END != ''">OTHER_REGIST_EXC_END,</if>
+        <if test="OTHER_REGIST_EXC_DAY != null and OTHER_REGIST_EXC_DAY != ''">OTHER_REGIST_EXC_DAY,</if>
+        <if test="OTHER_REGIST_EXC_OUT != null and OTHER_REGIST_EXC_OUT != ''">OTHER_REGIST_EXC_OUT,</if>
+        <if test="OTHER_REGIST_EXC_COME != null and OTHER_REGIST_EXC_COME != ''">OTHER_REGIST_EXC_COME,</if>
+        <if test="REG_ID != null and REG_ID != ''">REG_ID,</if>
+        <if test="MU_CD != null and MU_CD != ''">MU_CD,</if>
+        REG_DATE
+        )
+        values
+        (
+        <if test="OTHER_REGIST_SEQ != null and OTHER_REGIST_SEQ != ''">#{OTHER_REGIST_SEQ},</if>
+        <if test="OTHER_REGIST_EXC_DATE != null and OTHER_REGIST_EXC_DATE != ''">#{OTHER_REGIST_EXC_DATE},</if>
+        <if test="OTHER_REGIST_EXC_DES != null and OTHER_REGIST_EXC_DES != ''">#{OTHER_REGIST_EXC_DES},</if>
+        <if test="OTHER_REGIST_EXC_SUB != null and OTHER_REGIST_EXC_SUB != ''">#{OTHER_REGIST_EXC_SUB},</if>
+        <if test="OTHER_REGIST_EXC_START != null and OTHER_REGIST_EXC_START != ''">#{OTHER_REGIST_EXC_START},</if>
+        <if test="OTHER_REGIST_EXC_END != null and OTHER_REGIST_EXC_END != ''">#{OTHER_REGIST_EXC_END},</if>
+        <if test="OTHER_REGIST_EXC_DAY != null and OTHER_REGIST_EXC_DAY != ''">#{OTHER_REGIST_EXC_DAY},</if>
+        <if test="OTHER_REGIST_EXC_OUT != null and OTHER_REGIST_EXC_OUT != ''">#{OTHER_REGIST_EXC_OUT},</if>
+        <if test="OTHER_REGIST_EXC_COME != null and OTHER_REGIST_EXC_COME != ''">#{OTHER_REGIST_EXC_COME},</if>
+        <if test="REG_ID != null and REG_ID != ''">#{REG_ID},</if>
+        <if test="MU_CD != null and MU_CD != ''">#{MU_CD},</if>
+        NOW()
+        )
+    </insert>
+
+    <update id="otherRegistDelete" parameterType="Map">
+        update TB_OTHER_REGIST
+        set DLT_YN = 'Y'
+        where OTHER_REGIST_SEQ = #{OTHER_REGIST_SEQ}
+    </update>
+
+    <update id="otherRegistExcDelete" parameterType="Map">
+        update TB_OTHER_REGIST_EXC
+        set DLT_YN = 'Y'
+        where OTHER_REGIST_EXC_SEQ = #{OTHER_REGIST_EXC_SEQ}
+    </update>
+
+
+
+
+</mapper>

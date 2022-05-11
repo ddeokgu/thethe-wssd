@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC  "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+
+    <definition name="common-user" template="/WEB-INF/views/tiles/template/common/user/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/tiles/template/common/user/header.jsp"/>
+        <put-attribute name="content" value=""/>
+        <put-attribute name="footer" value="/WEB-INF/views/tiles/template/common/user/footer.jsp"/>
+    </definition>
+    <definition name="common-user:/*" extends="common-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/common/user/{1}.jsp"/>
+    </definition>
+    <definition name="common-user:/*/*" extends="common-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/common/user/{1}/{2}.jsp"/>
+    </definition>
+    <definition name="common-user:/*/*/*" extends="common-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/common/user/{1}/{2}/{3}.jsp"/>
+    </definition>
+    <definition name="common-user:/*/*/*/*" extends="common-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/common/user/{1}/{2}/{3}/{4}.jsp"/>
+    </definition>
+
+    <definition name="main-user" template="/WEB-INF/views/tiles/layouts/main/user/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/tiles/template/main/user/header.jsp"/>
+        <put-attribute name="content" value=""/>
+        <put-attribute name="footer" value="/WEB-INF/views/tiles/template/main/user/footer.jsp"/>
+    </definition>
+    <definition name="main-user:/*" extends="main-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/user/{1}.jsp"/>
+    </definition>
+    <definition name="main-user:/*/*" extends="main-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/user/{1}/{2}.jsp"/>
+    </definition>
+    <definition name="main-user:/*/*/*" extends="main-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/user/{1}/{2}/{3}.jsp"/>
+    </definition>
+    <definition name="main-user:/*/*/*/*" extends="main-user">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/user/{1}/{2}/{3}/{4}.jsp"/>
+    </definition>
+
+
+    <definition name="main-admin" template="/WEB-INF/views/tiles/layouts/main/admin/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/views/tiles/template/main/admin/header.jsp"/>
+        <put-attribute name="content" value=""/>
+        <put-attribute name="footer" value="/WEB-INF/views/tiles/template/main/admin/footer.jsp"/>
+    </definition>
+    <definition name="main-admin:/*" extends="main-admin">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/admin/{1}.jsp"/>
+    </definition>
+    <definition name="main-admin:/*/*" extends="main-admin">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/admin/{1}/{2}.jsp"/>
+    </definition>
+    <definition name="main-admin:/*/*/*" extends="main-admin">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/admin/{1}/{2}/{3}.jsp"/>
+    </definition>
+    <definition name="main-admin:/*/*/*/*" extends="main-admin">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/admin/{1}/{2}/{3}/{4}.jsp"/>
+    </definition>
+
+    <!-- Error Page -->
+    <definition name="error" template="/WEB-INF/views/pages/common/error/default.jsp">
+    </definition>
+    
+   
+    <definition name="login-admin" template="/WEB-INF/views/tiles/layouts/main/admin/loginlayout.jsp">
+        <put-attribute name="content" value=""/>
+    </definition>
+    <definition name="login-admin:/*" extends="login-admin">
+        <put-attribute name="content" value="/WEB-INF/views/pages/main/admin/login/{1}.jsp"/>
+    </definition>
+
+</tiles-definitions>

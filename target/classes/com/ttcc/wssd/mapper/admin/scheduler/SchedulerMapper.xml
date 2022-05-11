@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.scheduler.SchedulerMapper">
+
+    <select id="getUserList" parameterType="Map" resultType="Record">
+        select tr.REGIST_MU_CD, tr.REGIST_CHANNEL, tr.REGIST_ROOM, tr.REGIST_SEAT, tr.REGIST_SEQ
+        from TB_REGIST tr
+        where #{DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE
+        and tr.DLT_YN != 'Y';
+    </select>
+
+    <select id="getAttendanceList" parameterType="Map" resultType="Record">
+        select tr.REGIST_MU_NAME , tr.REGIST_MU_CD , tr.REGIST_CHANNEL, tr.REGIST_ROOM,
+               tor.OTHER_REGIST_SEQ, tor.OTHER_REGIST_SUB , tor.OTHER_REGIST_ARRIVE, tor.OTHER_REGIST_DEPART, tor.OTHER_REGIST_DAY, tor.OTHER_REGIST_OUT ,
+               tor.OTHER_REGIST_TYPE, tor.OTHER_REGIST_COME ,tor.OTHER_REGIST_START ,tor.OTHER_REGIST_END, DATE_FORMAT(tor.OTHER_REGIST_DATE, '%Y-%m-%d') as OTHER_REGIST_DATE,
+               tore.OTHER_REGIST_EXC_SEQ, DATE_FORMAT(tore.OTHER_REGIST_EXC_DATE, '%Y-%m-%d') as OTHER_REGIST_EXC_DATE
+        from tb_regist tr
+                 left outer join tb_other_regist tor
+                                 on tr.REGIST_MU_CD = tor.OTHER_REGIST_MU_CD
+                                     and tor.DLT_YN != 'Y'
+                                     and ((tor.OTHER_REGIST_DATE is null and tor.OTHER_REGIST_DAY = #{DAY} ) or tor.OTHER_REGIST_DATE = #{DATE})
+                 left outer join tb_other_regist_exc tore
+                                 on tor.OTHER_REGIST_SEQ = tore.OTHER_REGIST_SEQ
+                                     and tore.DLT_YN != 'Y'
+                                     and tore.OTHER_REGIST_EXC_DATE = #{DATE}
+        where tr.DLT_YN != 'Y'
+          and tr.REGIST_MU_CD = #{REGIST_MU_CD}
+          and #{DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE;
+    </select>
+
+
+
+</mapper>

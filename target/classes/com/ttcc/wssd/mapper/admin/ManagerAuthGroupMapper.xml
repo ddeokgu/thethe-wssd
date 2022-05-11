@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.main.app.mapper.admin.supervisor.ManagerAuthGroupMapper">
+     <select id="Manager_Auth_Group_S1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Auth_Group_S1_Str (
+            #{authGroupSeq},
+            #{authGroupName},
+            #{useYn},
+            #{rowsPerPage},
+            #{currentPage}
+            )
+        }
+    </select>
+     <select id="Manager_Menu_S2_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_S2_Str (
+            #{managerSeq},
+            #{managerId},
+            #{authGroupSeq},
+            #{managerName},
+            #{useYn}
+            )
+        }
+    </select>
+    <select id="Manager_Auth_Group_S2_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Auth_Group_S2_Str (
+            #{authGroupSeq}
+            )
+        }
+    </select>
+    <select id="Manager_Auth_Group_i1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Auth_Group_i1_Str (
+            #{loginUserSeq},
+            #{useYn},
+            #{authGroupName}
+            )
+        }
+    </select>
+    <select id="Manager_Menu_Group_i1_Str" statementType="CALLABLE" parameterType="HashMap" resultType="Map">
+        {  call Manager_Menu_Group_i1_Str (
+            #{loginUserSeq},
+            #{authGroupName},
+            #{menuSeq}
+            )
+        }
+    </select>
+    <update id="Manager_Menu_Group_U1_Str" statementType="CALLABLE" parameterType="HashMap">
+        {  call Manager_Menu_Group_U1_Str (
+            #{loginUserSeq},
+            #{authGroupSeq},
+            #{authGroupName},
+            #{menuSeq}
+            )
+        }
+    </update>
+    <update id="Manager_Auth_Group_U1_Str" statementType="CALLABLE" parameterType="HashMap">
+        {  call Manager_Auth_Group_U1_Str (
+            #{loginUserSeq},
+            #{authGroupSeq},
+            #{authGroupName},
+            #{useYn}
+            )
+        }
+    </update>
+    <delete id="Manager_Auth_Group_D1_Str" statementType="CALLABLE" parameterType="HashMap">
+        {  call Manager_Auth_Group_D1_Str (
+            #{authGroupSeq}
+            )
+        }
+    </delete>
+     <update id="accessUseYnEdit" parameterType="HashMap">
+        update manager_auth_group set 
+        use_yn = #{useYn},
+        update_by = #{loginUserSeq},
+        update_date = now()
+        where auth_group_seq = #{authGroupSeq}
+    </update>
+
+
+
+</mapper>

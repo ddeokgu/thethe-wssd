@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.user.setting.regist.RegistMapper">
+
+    <select id="registList" parameterType="Map" resultType="Record">
+        select TR.REGIST_SEQ,
+               DATE_FORMAT(TR.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE,
+               TR.REGIST_MU_CD,
+               TR.REGIST_MU_NAME,
+               TR.REGIST_FEE_TYPE,
+               TR.REGIST_MU_SCHOOL,
+               TR.REGIST_EXAM,
+               TR.REGIST_EXAM_DES,
+               TR.REGIST_PHONE_TYPE,
+               TR.REGIST_PARENT_PHONE,
+               TR.REGIST_TEST_FIRST,
+               TR.REGIST_TEST_SECOND,
+               DATE_FORMAT(TR.REGIST_START_DATE, '%Y-%m-%d') as REGIST_START_DATE,
+               DATE_FORMAT(TR.REGIST_END_DATE, '%Y-%m-%d') as REGIST_END_DATE,
+               TR.REGIST_CHANNEL,
+               TR.REGIST_ROOM,
+               TR.REGIST_SEAT,
+               DATE_FORMAT(TM.MU_REGIST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE,
+               TM.MU_PHONE,
+               TC.CHANNEL_NAME,
+               TF.FEE_NAME,
+               TR2.ROOM_NAME,
+               TS.SEAT_NAME,
+               TS2.SCHOOL_NAME
+        from TB_REGIST TR
+            left outer join TB_MEMBER_USER TM
+        on TR.REGIST_MU_CD = TM.MU_CD
+            inner join TB_CHANNEL TC
+        on TR.REGIST_CHANNEL = TC.CHANNEL_CODE
+            inner join TB_FEE TF
+        on TR.REGIST_FEE_TYPE = TF.FEE_CODE
+            inner join TB_ROOM TR2
+        on TR.REGIST_ROOM = TR2.ROOM_CODE
+            inner join TB_SEAT TS
+        on TR.REGIST_SEAT = TS.SEAT_SEQ
+            left outer join TB_SCHOOL TS2
+        on TR.REGIST_MU_SCHOOL = TS2.SCHOOL_CODE
+        where REGIST_MU_CD = #{MU_CD} and
+                TR.DLT_YN != 'Y'
+        order by TR.REGIST_SEQ desc;
+    </select>
+
+    <select id="selectRegistOne" parameterType="Map" resultType="Map">
+        select
+            tr.REGIST_SEQ,
+            DATE_FORMAT(tr.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE,
+            tr.REGIST_MU_CD,
+            tr.REGIST_MU_NAME,
+            tr.REGIST_FEE_TYPE,
+            tr.REGIST_MU_SCHOOL,
+            tr.REGIST_MU_GRADE,
+            tr.REGIST_EXAM,
+            tr.REGIST_EXAM_DES,
+            tr.REGIST_PHONE_TYPE,
+            tr.REGIST_PARENT_PHONE,
+            tr.REGIST_TEST_FIRST,
+            tr.REGIST_TEST_SECOND,
+            DATE_FORMAT(tr.REGIST_START_DATE, '%Y-%m-%d') as REGIST_START_DATE,
+            DATE_FORMAT(tr.REGIST_END_DATE, '%Y-%m-%d') as REGIST_END_DATE,
+            tr.REGIST_CHANNEL,
+            tr.REGIST_ROOM,
+            tr.REGIST_SEAT,
+            ts.SEAT_NAME
+        from tb_regist tr
+        left outer join tb_seat ts
+        on tr.REGIST_SEAT = ts.SEAT_SEQ
+        and ts.DLT_YN != 'Y'
+        where tr.DLT_YN != 'Y'
+            and tr.REGIST_SEQ = #{REGIST_SEQ}
+
+    </select>
+
+    <select id="feeList" parameterType="Map" resultType="Record">
+        select *
+        from tb_fee
+        where DLT_YN != 'Y' and
+              USE_YN != 'N' and
+              CHANNEL_CODE = #{CHANNEL_CODE} and
+              MANAGER_SET != 'Y'
+        order by FEE_NAME asc
+    </select>
+
+    <select id="getRegistFirstDate" parameterType="Map" resultType="String">
+        select DATE_FORMAT(MU_REGIST_DATE, '%Y-%m-%d') as MU_REGIST_DATE
+        from TB_MEMBER_USER
+        where MU_CD = #{MU_CD};
+    </select>
+
+    <select id="roomSiteMapCheck" parameterType="Map" resultType="String">
+        select ROOM_SITE_MAP
+        from TB_ROOM
+        where ROOM_CODE = #{ROOM_CODE};
+    </select>
+
+    <select id="registCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_regist
+        where REGIST_MU_CD = #{MU_CD}
+          and DLT_YN != 'Y';
+    </select>
+
+    <insert id="registInsert" parameterType="Map">
+        <choose>
+            <when test="REGIST_FIRST_DATE != null and REGIST_FIRST_DATE != ''">
+                insert into TB_REGIST (
+                                       REGIST_FIRST_DATE,
+                                       REGIST_MU_NAME,
+                                       REGIST_MU_CD,
+                                       REGIST_MU_ID,
+                                       REGIST_MU_GENDER,
+                                       REGIST_MU_PHONE,
+                                       REGIST_FEE_TYPE,
+                                       REGIST_MU_SCHOOL,
+                                       REGIST_MU_GRADE,
+                                       REGIST_EXAM,
+                                       REGIST_EXAM_DES,
+                                       REGIST_PHONE_TYPE,
+                                       REGIST_PARENT_PHONE,
+                                       REGIST_TEST_FIRST,
+                                       REGIST_TEST_SECOND,
+                                       REGIST_START_DATE,
+                                       REGIST_END_DATE,
+                                       REGIST_CHANNEL,
+                                       REGIST_ROOM,
+                                       REGIST_SEAT,
+                                       REGIST_MU_TYPE,
+                                       REGIST_TYPE,
+                                       STUDENT_CHECK,
+                                       REG_ID,
+                                       REG_DATE,
+                                       PAY_CODE,
+                                       REGIST_PAY_TYPE
+                                       )
+                values (
+                        #{REGIST_FIRST_DATE},
+                        #{REGIST_MU_NAME},
+                        #{REGIST_MU_CD},
+                        #{REGIST_MU_ID},
+                        #{REGIST_MU_GENDER},
+                        #{REGIST_MU_PHONE},
+                        #{REGIST_FEE_TYPE},
+                        #{REGIST_MU_SCHOOL},
+                        #{REGIST_MU_GRADE},
+                        #{REGIST_EXAM},
+                        #{REGIST_EXAM_DES},
+                        #{REGIST_PHONE_TYPE},
+                        #{REGIST_PARENT_PHONE},
+                        #{REGIST_TEST_FIRST},
+                        #{REGIST_TEST_SECOND},
+                        #{REGIST_START_DATE},
+                        #{REGIST_END_DATE},
+                        #{REGIST_CHANNEL},
+                        #{REGIST_ROOM},
+                        #{REGIST_SEAT},
+                        #{REGIST_MU_TYPE},
+                        #{REGIST_TYPE},
+                        #{STUDENT_CHECK},
+                        #{REG_ID},
+                        NOW(),
+                        #{PAY_CODE},
+                        #{REGIST_PAY_TYPE}
+                )
+            </when>
+            <otherwise>
+                {CALL REGIST_INSERT(
+                       #{REGIST_MU_NAME},
+                       #{REGIST_MU_CD},
+                       #{REGIST_MU_ID},
+                       #{REGIST_MU_GENDER},
+                       #{REGIST_MU_PHONE},
+                       #{REGIST_FEE_TYPE},
+                       #{REGIST_MU_SCHOOL},
+                       #{REGIST_MU_GRADE},
+                       #{REGIST_EXAM},
+                       #{REGIST_EXAM_DES},
+                       #{REGIST_PHONE_TYPE},
+                       #{REGIST_PARENT_PHONE},
+                       #{REGIST_TEST_FIRST},
+                       #{REGIST_TEST_SECOND},
+                       #{REGIST_START_DATE},
+                       #{REGIST_END_DATE},
+                       #{REGIST_CHANNEL},
+                       #{REGIST_ROOM},
+                       #{REGIST_SEAT},
+                       #{REGIST_MU_TYPE},
+                       #{REGIST_TYPE},
+                       #{STUDENT_CHECK},
+                       #{REG_ID},
+                       #{PAY_CODE},
+                       #{REGIST_PAY_TYPE}
+                    )}
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="registRoomList" parameterType="Map" resultType="Record">
+        select TR.ROOM_SEQ ,TR.ROOM_CODE,TR.ROOM_SITE_MAP ,TR.ROOM_NAME ,TR.USE_YN ,TR.REG_ID ,DATE_FORMAT(TR.REG_DATE, '%Y-%m-%d') as REG_DATE, TC.CHANNEL_NAME, TC.CHANNEL_CODE,
+        TR.SEAT_COUNT
+        from tb_room TR
+        inner join tb_channel TC
+        on TR.CHANNEL_CODE = TC.CHANNEL_CODE
+        where TC.CHANNEL_CODE = #{CHANNEL_CODE}
+            and TR.DLT_YN != 'Y'
+            and TR.USE_YN != 'N'
+        order by TR.ROOM_SEQ desc
+    </select>
+
+    <select id="registSeatList" parameterType="Map" resultType="Record">
+        select ts.*, tr.REGIST_SEAT, tr.REGIST_MU_NAME, tr.REGIST_MU_CD, tr.REGIST_SEAT, tr.REGIST_MU_ID
+        from TB_SEAT ts
+                 left outer join TB_REGIST tr
+                                 on ts.SEAT_SEQ = tr.REGIST_SEAT
+                                     and tr.REGIST_ROOM = #{ROOM_CODE}
+                                     and tr.DLT_YN != 'Y'
+                                     and  (((tr.REGIST_START_DATE between #{REGIST_START_DATE} and #{REGIST_END_DATE})
+                                         or
+                                           (tr.REGIST_END_DATE between #{REGIST_START_DATE} and #{REGIST_END_DATE}))
+                                        or ((#{REGIST_START_DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE)
+                                         and (#{REGIST_END_DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE)))
+        where ts.ROOM_CODE = #{ROOM_CODE}
+          and ts.DLT_YN != 'Y'
+        order by ts.SEAT_SEQ asc;
+    </select>
+
+    <update id="seatInsert" parameterType="Map">
+        update TB_REGIST
+        set REGIST_ROOM = #{REGIST_ROOM}
+                              , REGIST_SEAT = #{REGIST_SEAT}
+        where REGIST_SEQ = #{REGIST_SEQ}
+          and DLT_YN != 'Y'
+    </update>
+
+    <insert id="attendanceInsert" parameterType="Map">
+        insert into TB_ATTENDANCE( ATTENDANCE_MU_CD, ATTENDANCE_DATE, ATTENDANCE_DAY, ATTENDANCE_CHANNEL, ATTENDANCE_ROOM, ATTENDANCE_SEAT, REGIST_SEQ)
+        values (#{REGIST_MU_CD}, #{DATE}, #{DAY}, #{REGIST_CHANNEL}, #{REGIST_ROOM}, #{REGIST_SEAT}, #{REGIST_SEQ});
+    </insert>
+
+
+
+</mapper>

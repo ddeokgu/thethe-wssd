@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="wssd:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>wssd</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="wssd-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="wssd:war exploded" />
+    </root>
+  </artifact>
+</component>

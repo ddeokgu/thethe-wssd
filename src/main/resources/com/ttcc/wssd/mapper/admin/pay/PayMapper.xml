@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.pay.PayMapper">
+
+    <select id="getPayCoode" parameterType="Map" resultType="String">
+        {CALL GET_PAY_CODE(#{MU_ID})}
+    </select>
+
+    <select id="payCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_pay tp
+        left outer join TB_REGIST tr
+        on tp.PAY_CODE = tr.PAY_CODE
+        where tp.PAY_CODE != ''
+        <if test='searchChannel != null and searchChannel != ""'>
+            and tr.REGIST_CHANNEL = #{searchChannel}
+            <if test='searchText != null and searchText != ""'>
+                <if test='search_type == "PAY_MU_NAME"'>
+                    and tp.PAY_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+                </if>
+                <if test='search_type == "PAY_MU_PHONE"'>
+                    and tp.PAY_MU_PHONE like (CONCAT('%', #{searchText}, '%'))
+                </if>
+            </if>
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "PAY_MU_NAME"'>
+                and tp.PAY_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "PAY_MU_PHONE"'>
+                and tp.PAY_MU_PHONE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+    </select>
+
+    <select id="payList" parameterType="Map" resultType="Record">
+        select tp.PAY_SEQ,
+               tp.PAY_CODE,
+               tp.PAY_MU_CD,
+               tp.PAY_MU_NAME,
+               tp.PAY_MU_PHONE,
+               tp.PAY_MU_EMAIL,
+               tp.PAY_PRICE,
+               tp.PAY_METHOD,
+               tp.PAY_TYPE,
+               DATE_FORMAT(tp.REG_DATE, '%Y-%m-%d') REG_DATE,
+               tp.REG_ID,
+               tp.CANCEL_YN,
+               tp.CANCEL_ID,
+               tp.CANCEL_DATE,
+               tp.PAY_AUTH_CODE,
+               tp.PAY_TID
+        from tb_pay tp
+        left outer join TB_REGIST tr
+        on tp.PAY_CODE = tr.PAY_CODE
+        where tp.PAY_CODE != ''
+        <if test='searchChannel != null and searchChannel != ""'>
+            and tr.REGIST_CHANNEL = #{searchChannel}
+            <if test='searchText != null and searchText != ""'>
+                <if test='search_type == "PAY_MU_NAME"'>
+                    and tp.PAY_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+                </if>
+                <if test='search_type == "PAY_MU_PHONE"'>
+                    and tp.PAY_MU_PHONE like (CONCAT('%', #{searchText}, '%'))
+                </if>
+            </if>
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "PAY_MU_NAME"'>
+                and tp.PAY_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "PAY_MU_PHONE"'>
+                and tp.PAY_MU_PHONE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        order by tp.PAY_SEQ desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER}
+    </select>
+
+    <select id="payOneInfo" parameterType="Map" resultType="Map">
+        select * from TB_PAY
+        where PAY_SEQ = #{seq}
+    </select>
+
+    <insert id="payInsert" parameterType="Map">
+        <if test="PayMethod != null and PayMethod == 'CARD'">
+        insert into TB_PAY
+            (PAY_CODE, PAY_MU_CD, PAY_MU_NAME, PAY_MU_PHONE, PAY_MU_EMAIL, PAY_PRICE,
+             PAY_METHOD, PAY_TYPE, REG_DATE, REG_ID, PAY_MU_ID, PAY_AUTH_CODE, PAY_TID, PAY_CARD, PAY_PERIOD)
+             value (#{MOID},#{MU_CD},#{BuyerName},#{BuyerTel},#{BuyerEmail}, #{Amt}, #{PayMethod}
+             ,#{GoodsName}, NOW(),#{MU_ID},#{MU_ID}, #{AuthCode}, #{TID}, #{fn_name}, #{CardQuota});
+        </if>
+        <if test="PayMethod != null and PayMethod == 'BANK'">
+            insert into TB_PAY
+            (PAY_CODE, PAY_MU_CD, PAY_MU_NAME, PAY_MU_PHONE, PAY_MU_EMAIL, PAY_PRICE,
+            PAY_METHOD, PAY_TYPE, REG_DATE, REG_ID, PAY_MU_ID, PAY_AUTH_CODE, PAY_TID, PAY_CASH_BILL, PAY_CASH_NUM, PAY_BANK, PAY_BANK_CODE)
+            value (#{MOID},#{MU_CD},#{BuyerName},#{BuyerTel},#{BuyerEmail}, #{Amt}, #{PayMethod}
+            ,#{GoodsName}, NOW(),#{MU_ID},#{MU_ID}, #{AuthCode}, #{TID}, #{ReceitType}, #{BuyerAuthNum}, #{BankName}, #{BankCd});
+        </if>
+    </insert>
+
+    <insert id="payCancelInsert" parameterType="Map">
+        insert into TB_PAY_CANCEL
+        (PAY_CANCEL_TID, PAY_SEQ, PAY_CANCEL_NAME, PAY_CODE, PAY_CANECEL_AMT, PAY_CANCEL_MSG,
+         PAY_CANCEL_RESULTCODE, PAY_CANCEL_RESULTMSG, PAY_CANCEL_DATE, PAY_CANCEL_APP_DATE)
+         values (#{tid}, #{seq}, #{PAY_MU_NAME}, #{payCode}, #{cancelAmt}, #{cancelMsg},
+                 #{innopay_cancel_resultcode}, #{innopay_cancel_resultmsg}, NOW(), #{innopay_cancel_time})
+    </insert>
+
+    <insert id="payCancelErrInsert" parameterType="Map">
+        insert into TB_PAY_CANCEL
+        (PAY_CANCEL_TID, PAY_SEQ, PAY_CANCEL_NAME, PAY_CODE, PAY_CANECEL_AMT, PAY_CANCEL_MSG,
+         PAY_CANCEL_RESULTCODE, PAY_CANCEL_RESULTMSG)
+        values (#{tid}, #{seq}, #{PAY_MU_NAME}, #{payCode}, #{cancelAmt}, #{cancelMsg},
+                #{innopay_cancel_resultcode}, #{innopay_cancel_resultmsg})
+    </insert>
+
+    <update id="payCancelUpdate" parameterType="Map">
+        update TB_PAY
+        set CANCEL_YN = 'Y' , CANCEL_DATE = NOW()
+        where PAY_SEQ = #{seq}
+            and PAY_TID = #{tid}
+    </update>
+
+</mapper>

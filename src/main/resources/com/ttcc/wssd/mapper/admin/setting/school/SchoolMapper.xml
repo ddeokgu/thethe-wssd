@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.school.SchoolMapper">
+
+    <select id="schoolCount" resultType="Integer">
+        select count(*) from TB_SCHOOL TS
+        where TS.DLT_YN != 'Y'
+        <if test='searchSchoolUse != null and searchSchoolUse != ""'>
+            and TS.USE_YN = #{searchSchoolUse}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "SCHOOL_NAME"'>
+                and TS.SCHOOL_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "SCHOOL_CODE"'>
+                and TS.SCHOOL_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TS.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+    </select>
+
+    <select id="schoolList" resultType="Record">
+        select TS.SCHOOL_SEQ, TS.SCHOOL_CODE, TS.SCHOOL_NAME, TS.SCHOOL_ZIP, TS.SCHOOL_ADDRESS, TS.SCHOOL_ADDRESS_DETAIL, TS.SCHOOL_PHONE, TS.USE_YN, TS.REG_ID, DATE_FORMAT(TS.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from TB_SCHOOL TS
+        where TS.DLT_YN != 'Y'
+        <if test='searchSchoolUse != null and searchSchoolUse != ""'>
+            and TS.USE_YN = #{searchSchoolUse}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "SCHOOL_NAME"'>
+                and TS.SCHOOL_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "SCHOOL_CODE"'>
+                and TS.SCHOOL_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TS.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="SCHOOL_SEQ != null and SCHOOL_SEQ != ''">
+            and TS.SCHOOL_SEQ = #{SCHOOL_SEQ}
+        </if>
+        order by TS.SCHOOL_SEQ desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <select id="schoolVacationList" parameterType="Map" resultType="Record">
+        select VACATION_SEQ, SCHOOL_CODE, DATE_FORMAT(VACATION_START, '%Y-%m-%d') as VACATION_START, DATE_FORMAT(VACATION_END, '%Y-%m-%d') as VACATION_END
+        from tb_vacation
+        where
+              <if test='REGIST_MU_SCHOOL != null and REGIST_MU_SCHOOL !=""'>
+                  SCHOOL_CODE = #{REGIST_MU_SCHOOL}
+              </if>
+              <if test='SCHOOL_CODE != null and SCHOOL_CODE != ""'>
+                  SCHOOL_CODE = #{SCHOOL_CODE}
+              </if>
+
+    </select>
+
+    <update id="schoolDelete" parameterType="Map">
+        update tb_school
+        set DLT_YN = 'Y', DLT_DATE = NOW(), DLT_ID = #{DLT_ID}
+        where SCHOOL_SEQ = #{SCHOOL_SEQ};
+    </update>
+
+    <insert id="schoolRegist" parameterType="Map">
+       {CALL SCHOOL_REGIST(#{CODE_TYPE}, #{SCHOOL_NAME}, #{SCHOOL_ZIP}, #{SCHOOL_ADDRESS}, #{SCHOOL_ADRESS_DETAIL}, #{SCHOOL_PHONE}, #{USE_YN}, #{REG_ID})};
+    </insert>
+
+    <insert id="schoolVacationInsert" parameterType="Map">
+        insert into tb_vacation (SCHOOL_CODE,VACATION_START, VACATION_END, REG_ID, REG_DATE)
+        values (#{SCHOOL_CODE}, #{VACATION_START}, #{VACATION_END}, #{REG_ID}, NOW());
+    </insert>
+
+    <delete id="schoolVacationDelete" parameterType="Map">
+        delete from tb_vacation
+        where SCHOOL_CODE = #{SCHOOL_CODE} and
+              VACATION_START = #{VACATION_START} and
+              VACATION_END = #{VACATION_END};
+    </delete>
+
+    <update id="schoolUpdate" parameterType="Map">
+        update tb_school
+        set
+        <if test="SCHOOL_NAME != null and SCHOOL_NAME != ''">SCHOOL_NAME = #{SCHOOL_NAME},</if>
+        <if test="SCHOOL_ZIP != null and SCHOOL_ZIP != ''">SCHOOL_ZIP = #{SCHOOL_ZIP},</if>
+        <if test="SCHOOL_ADDRESS != null and SCHOOL_ADDRESS != ''">SCHOOL_ADDRESS = #{SCHOOL_ADDRESS},</if>
+        <if test="SCHOOL_ADDRESS_DETAIL != null and SCHOOL_ADDRESS_DETAIL != ''">SCHOOL_ADDRESS_DETAIL = #{SCHOOL_ADDRESS_DETAIL},</if>
+        <if test="SCHOOL_PHONE != null and SCHOOL_PHONE != ''">SCHOOL_PHONE = #{SCHOOL_PHONE},</if>
+        <if test="USE_YN != null and USE_YN != ''">USE_YN = #{USE_YN},</if>
+        UPDATE_DATE = NOW()
+        where SCHOOL_SEQ = #{SCHOOL_SEQ}
+        and DLT_YN != 'Y';
+    </update>
+
+
+</mapper>

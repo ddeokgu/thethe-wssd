@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.1" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd">
+
+    <description>Platform Paging Taglib</description>
+    <tlib-version>2.0</tlib-version>
+    <short-name>dh</short-name>
+    <function>
+        <description>
+            플랫폼 페이징
+        </description>
+        <name>pagingA</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>java.lang.String pagingA(int, int, int, int)</function-signature>
+    </function>
+    <function>
+        <description>
+            플랫폼 페이징2
+        </description>
+        <name>pagingB</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>java.lang.String pagingB(int, int, int, int)</function-signature>
+    </function>
+    <function>
+        <description>
+            relaxed 필터
+        </description>
+        <name>relaxedFilter</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>java.lang.String relaxFilter(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            none 필터
+        </description>
+        <name>noneFilter</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>java.lang.String noneFilter(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            simpleText 필터
+        </description>
+        <name>simpleTextFilter</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>java.lang.String simpleTextFilter(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            bit and
+        </description>
+        <name>bitAnd</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>long bitAnd(long,long)</function-signature>
+    </function>
+    <function>
+        <description>
+            bit and By exp
+        </description>
+        <name>bitAndByExp</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>long bitAndByExp(long,long)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            bit or
+        </description>
+        <name>bitOr</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>long bitOr(long,long)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            bit xor
+        </description>
+        <name>bitXor</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>long bitXor(long,long)</function-signature>
+    </function>
+
+    <function>
+        <description>
+            bit not
+        </description>
+        <name>bitNot</name>
+        <function-class>com.ttcc.wssd.common.util.DHTaglib</function-class>
+        <function-signature>long bitNot(long)</function-signature>
+    </function>
+</taglib>

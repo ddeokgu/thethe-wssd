@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.channel.ChannelMapper">
+
+    <select id="channelCount" resultType="Integer">
+        select count(*) from TB_CHANNEL TC where TC.DLT_YN != 'Y'
+        <if test="searchChannelUseYn != null and searchChannelUseYn != ''">
+            and TC.USE_YN = #{searchChannelUseYn}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "CHANNEL_NAME"'>
+                and TC.CHANNEL_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "CHANNEL_ADDRESS"'>
+                and TC.CHANNEL_ADDRESS like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TC.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+    </select>
+
+    <select id="channelList" resultType="Record">
+        select TC.CHANNEL_SEQ, TC.CHANNEL_CODE, TC.CHANNEL_NAME, TC.CHANNEL_ADDRESS,
+               TC.CHANNEL_ZIP, TC.CHANNEL_ADDRESS_DETAIL, TC.USE_YN, TC.REG_ID, DATE_FORMAT(TC.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from TB_CHANNEL TC
+        where TC.DLT_YN != 'Y'
+        <if test="searchChannelUseYn != null and searchChannelUseYn != ''">
+            and TC.USE_YN = #{searchChannelUseYn}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "CHANNEL_NAME"'>
+                and TC.CHANNEL_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "CHANNEL_ADDRESS"'>
+                and TC.CHANNEL_ADDRESS like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TC.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="CHANNEL_SEQ != null and CHANNEL_SEQ != ''">
+            and TC.CHANNEL_SEQ = #{CHANNEL_SEQ}
+        </if>
+        order by TC.CHANNEL_SEQ desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <insert id="channelRegist" parameterType="Map">
+        {CALL CHANNEL_REGIST (#{CODE_TYPE}, #{CHANNEL_NAME},#{CHANNEL_ZIP}, #{CHANNEL_ADDRESS}, #{CHANNEL_ADDRESS_DETAIL}, #{USE_YN}, #{REG_ID}) }
+    </insert>
+
+    <update id="channelDelete" parameterType="Map">
+        update TB_CHANNEL
+        set DLT_YN = 'Y' ,
+            DLT_DATE = NOW(),
+            DLT_ID = #{DLT_ID}
+        where CHANNEL_SEQ = #{CHANNEL_SEQ};
+    </update>
+
+    <update id="channelUpdate" parameterType="Map">
+        update TB_CHANNEL
+        set
+        <if test="CHANNEL_NAME != null and CHANNEL_NAME != ''">CHANNEL_NAME = #{CHANNEL_NAME}</if>
+        <if test="CHANNEL_ZIP != null and CHANNEL_ZIP != ''">,CHANNEL_ZIP = #{CHANNEL_ZIP}</if>
+        <if test="CHANNEL_ADDRESS != null and CHANNEL_ADDRESS != ''">, CHANNEL_ADDRESS = #{CHANNEL_ADDRESS}</if>
+        <if test="CHANNEL_ADDRESS_DETAIL != null and CHANNEL_ADDRESS_DETAIL != ''">, CHANNEL_ADDRESS_DETAIL = #{CHANNEL_ADDRESS_DETAIL}</if>
+        <if test="USE_YN != null and USE_YN != ''">, USE_YN = #{USE_YN}</if>
+          , UPDATE_DATE = NOW()
+          , UPDATE_ID = #{UPDATE_ID}
+        where CHANNEL_SEQ = #{CHANNEL_SEQ};
+    </update>
+
+    <update id="channelUseYn" parameterType="Map">
+        update TB_CHANNEL
+        set USE_YN = if(USE_YN = 'Y', 'N', 'Y')
+        where CHANNEL_SEQ = #{CHANNEL_SEQ};
+    </update>
+
+    <select id="deleteCheck" parameterType="Map" resultType="Integer">
+        select count(*) from
+                             <choose>
+                                 <when test='gubun != null and gubun == "CH"'>tb_room tr where tr.CHANNEL_CODE = #{CODE} and tr.DLT_YN != 'Y'</when>
+                                 <when test='gubun != null and gubun == "RO"'>tb_regist tr where tr.REGIST_ROOM = #{CODE} and tr.DLT_YN != 'Y'</when>
+                             </choose>
+
+    </select>
+
+</mapper>

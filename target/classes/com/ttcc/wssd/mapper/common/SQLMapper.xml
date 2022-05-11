@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SQLMapper" >
+
+    <sql id="paging_head">
+        select RES1.* FROM(
+    </sql>
+
+    <sql id="paging_tail">
+        ) RES1
+        LIMIT #{sql_paging_limit, jdbcType=INTEGER} OFFSET #{sql_paging_offset, jdbcType=INTEGER}
+    </sql>
+
+</mapper>

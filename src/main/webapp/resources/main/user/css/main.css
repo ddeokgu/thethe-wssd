@@ -1,0 +1,64 @@
+@charset "utf-8";
+@import url('./font.css');
+
+#container { position: relative; height: 100vh; }
+#container .contents_wrap .cont_box { padding-top: 80px; }
+#container .contents_wrap .cont_inner{ width: 100%; padding: 0 15px; max-width: 1220px; margin: auto; }
+#container .contents_wrap .bg-box01 { position:fixed; width: 50%; right: 0; bottom: 0; height: 100%; overflow: hidden; z-index: -1; }
+#container .contents_wrap .bg-box01:last-child { width: 17%; left:0; }
+#container .contents_wrap .bg-box01 img { position: absolute; left:0; top:0; }
+#container .contents_wrap .bg-box01:last-child img { top:auto; left: auto; right: 0; bottom: 0; }
+.cont_box .backL { width: 500px; }
+.cont_box .backL p { font-size: 18px; color: #07114c; }
+.cont_box .logoTit h1 img { width: 300px; }
+.cont_box .logoTit h1 { padding:20px 0 30px; }
+.cont_box .backL .info { display: flex; flex-wrap: nowrap; }
+.cont_box .backL .info a { display: flex; align-items: center; justify-content: center; }
+.cont_box .backL .info a:last-child { margin-right: 0; margin-bottom:0; }
+.cont_box .backL .info a span { display: block; position: relative; padding-left: 30px; letter-spacing: 0.03em; }
+.cont_box .backL .info a span:before { position: absolute; content: ''; width:17px; height:22px; top:50%; transform: translateY(-50%); left: 0; background: url("../img/icon/loginiCon.png")no-repeat center; background-size: 100% 100%; }
+.cont_box .backL .info a:nth-child(2) span:before { background: url("../img/icon/joiniCon.png")no-repeat center; background-size: 100% 100%;  }
+.cont_box .backL .titxt { padding:50px 0; }
+.cont_box .backL .titxt span { display: block; color:#07114c; font-size: 27px; line-height: 1.3em; }
+.cont_box .backL .blogBtn li { float: left; width: 58%; margin-bottom: 30px; margin-right: 2%; }
+.cont_box .backL .blogBtn li:nth-child(2), .cont_box .backL .blogBtn li:nth-child(4), .cont_box .backL .blogBtn li:nth-child(5) { margin-right: 0; width: 40%; }
+.cont_box .backL .blogBtn li:last-child { margin-bottom: 0; }
+.cont_box .backL .blogBtn li a { display: flex; align-items: center; }
+.cont_box .backL .blogBtn li a img { width:55px; }
+.cont_box .backL .blogBtn li a span { padding-left:10px; font-size: 18px; color:#07114c; }
+
+/* containR */
+.containR { position: relative; padding-top: 87px; }
+.containR .contents_wrap .bg-box01 { height: calc(100% - 86px)!important; }
+.containR .cont_box .cont_inner .backL .logoTit { display: none; }
+.containR .cont_box .cont_inner .backL .titxt { padding:15px 0 50px; }
+.containR .cont_box .cont_inner .backL .info { display: none; }
+
+@media (max-width:1024px) {
+    .containR { padding-top: 71px; }
+    .containR .contents_wrap .bg-box01 { height: calc(100% - 71px)!important; }
+    #container .contents_wrap .cont_inner{ max-width: 767px; }
+    #container .contents_wrap .bg-box01 img { width: 80%; right: 0; left: auto; }
+    #container .contents_wrap .bg-box01:last-child img { width: 100%; left:0; right: auto; }
+    .cont_box .backL { width: auto; text-align: center; }
+    .cont_box .backL p { font-size: 14px; }
+    .cont_box .backL h1 { padding: 10px 0 15px; }
+    .cont_box .logoTit h1 img { width: 150px; }
+    .cont_box .backL .info { justify-content: center; }
+    .cont_box .backL .info a span { padding-left:26px; }
+    .cont_box .backL .info a span:before { width: 14px; height: 19px; }
+    .cont_box .backL .titxt { padding:30px 0; }
+    .cont_box .backL .titxt span { font-size: 19px; }
+    .cont_box .backL .blogBtn { max-width: 330px; margin: auto; }
+    .cont_box .backL .blogBtn li a img { width:45px; }
+    .cont_box .backL .blogBtn li a span { font-size: 14px; line-height: 1.2em; }
+
+    /* containR */
+    .containR .cont_box .cont_inner .backL .titxt { padding:15px 0 30px; }
+}
+@media (max-width:390px) {
+    .cont_box .cont_inner .backL .info { flex-wrap: wrap; }
+    .cont_box .cont_inner .backL .info a { margin-bottom:5px; }
+    .cont_box .cont_inner .backL .info a:nth-child(2) { margin-right:0; }
+    .cont_box .cont_inner .backL .titxt span { display: inline; }
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.code.CodeMapper">
+
+    <select id="getCodeGroupAll" resultType="Record">
+        select * from TB_CODE_GROUP;
+    </select>
+
+    <select id="codeCount" resultType="Integer" >
+        select count(*) from TB_CODE
+        where DLT_YN != 'Y';
+    </select>
+
+    <select id="codeList" resultType="Record">
+        select TC.CODE_SEQ, TC.CODE_ID, TC.CODE_NAME, TC.CODE_TYPE, TC.CODE_DES, TC.USE_YN, TC.REG_ID, DATE_FORMAT(TC.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from TB_CODE TC
+        where TC.DLT_YN != 'Y'
+        <if test='USE_YN != null and USE_YN != ""'>
+            and TC.USE_YN = #{USE_YN}
+        </if>
+       <!-- <if test='searchText != null and searchText != ""'>
+            <if test='di_type == "di_nm"'>
+                and tdi.DI_NM like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='di_type == "di_ip"'>
+                and DI_IP like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>-->
+
+        order by TC.REG_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+
+    </select>
+
+    <select id="channelCodeDeleteCheck" resultType="Integer">
+        select count(*)
+        from TB_CHANNEL TC
+        where TC.DLT_YN != 'Y'
+        and TC.CHANNEL_CODE_ID = #{CODE_ID};
+    </select>
+
+    <insert id="codeRegist" parameterType="Map">
+        insert into TB_CODE (CODE_ID, CODE_NAME, CODE_TYPE, CODE_DES, USE_YN, REG_ID, REG_DATE) values
+        (#{CODE_ID}, #{CODE_NAME}, #{CODE_TYPE}, #{CODE_DES}, #{USE_YN}, #{REG_ID}, NOW());
+
+    </insert>
+
+    <select id="codeCheck" resultType="Int">
+        select count(*) from TB_CODE where CODE_ID = #{CODE_ID} and DLT_YN != 'Y';
+    </select>
+
+    <update id="codeDelete" parameterType="Map">
+        update TB_CODE
+        set DLT_YN = 'Y',
+            DLT_DATE=NOW() ,
+            DLT_ID = #{DLT_ID}
+        where CODE_SEQ = #{CODE_SEQ};
+    </update>
+
+    <update id="codeUpdate" parameterType="Map">
+        update TB_CODE
+        set CODE_ID = #{CODE_ID}
+                         , CODE_NAME = #{CODE_NAME}
+                         , CODE_DES = #{CODE_DES}
+                         , CODE_TYPE = #{CODE_TYPE}
+                         , USE_YN = #{USE_YN}
+                         , UPDATE_ID = #{UPDATE_ID}
+                         , UPDATE_DATE = NOW()
+        where CODE_SEQ = #{CODE_SEQ};
+    </update>
+
+    <update id="codeUseYn" parameterType="Map">
+        update TB_CODE
+        set USE_YN = if(USE_YN = 'Y', 'N', 'Y')
+        where CODE_SEQ = #{CODE_SEQ};
+    </update>
+
+</mapper>

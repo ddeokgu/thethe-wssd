@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.user.member.UserMemberMapper">
+
+    <select id="checkLoginId" parameterType="Map" resultType="Integer">
+        select count(*)
+        from TB_MEMBER_USER
+        where MU_ID = #{memberId};
+    </select>
+    
+    <select id="checkPassword" parameterType="Map" resultType="Integer">
+        select count(*)
+        from TB_MEMBER_USER
+        where MU_ID = #{editId}
+        and MU_PW = #{password};
+    </select>
+    
+    <insert id="insertMember" parameterType="Map">
+        {CALL MEMBER_USER_REGIST (#{MU_ID}, #{MU_PW}, #{MU_NAME}, #{MU_GENDER}, #{MU_BIRTH}, #{MU_ZIP}, #{MU_ADDRESS},#{MU_PHONE}, #{MU_EMAIL}, #{MU_FUNNEL}, #{MU_FUNNEL_DES}, #{MB_TYPE})};
+    </insert>
+    
+    <!-- 사용자ID 중복확인-->
+    <select id="Chk_Is_Id_Using_S1_Str" parameterType="HashMap" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS idChk
+        FROM tb_member_user
+        WHERE MU_ID = #{managerId}
+    </select>
+    
+    <update id="updatePassword" statementType="CALLABLE" parameterType="HashMap">
+        {  call updatePassword (
+            #{loginUserSeq},
+            #{password},
+            #{mbCd}
+            )
+        }
+    </update>
+
+    <select id="getUserProfile" parameterType="Map" resultType="Map">
+        select *
+        from TB_MEMBER_USER
+        where MU_CD = #{MU_CD}
+    </select>
+
+    <update id="updateProfile" parameterType="Map">
+        update TB_MEMBER_USER
+        set
+        <if test="MU_ID != null and MU_ID != ''">MU_ID = #{MU_ID},</if>
+        <if test="MU_NAME != null and MU_NAME != ''">MU_NAME = #{MU_NAME},</if>
+        <if test="MU_BIRTH != null and MU_BIRTH != ''">MU_BIRTH = #{MU_BIRTH},</if>
+        <if test="MU_ZIP != null and MU_ZIP != ''">MU_ZIP = #{MU_ZIP},</if>
+        <if test="MU_ADDRESS != null and MU_ADDRESS != ''">MU_ADDRESS = #{MU_ADDRESS},</if>
+        <if test="MU_PHONE != null and MU_PHONE != ''">MU_PHONE = #{MU_PHONE}</if>
+        where MU_CD = #{MU_CD}
+        and DLT_YN !='Y'
+
+    </update>
+
+    <update id="userPasswordUpdate" parameterType="Map">
+        update TB_MEMBER_USER
+        set MU_PW = #{newPassword}
+        where MU_CD = #{MU_CD}
+    </update>
+
+
+
+</mapper>

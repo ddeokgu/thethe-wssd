@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.test.TestMapper">
+
+
+    <select id="testCount" resultType="Integer" >
+        select count(*) from TB_TEST TT
+        where TT.DLT_YN != 'Y'
+        <if test='searchTestUse != null and searchTestUse != ""'>
+            and TT.USE_YN = #{searchTestUse}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "TEST_NAME"'>
+                and TT.TEST_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "TEST_CODE"'>
+                and TT.TEST_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TT.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+
+    </select>
+
+    <select id="testList" resultType="Record">
+        select TT.TEST_SEQ, TT.TEST_CODE, TT.TEST_NAME, TT.USE_YN, TT.REG_ID, DATE_FORMAT(TT.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from TB_TEST TT
+        where TT.DLT_YN != 'Y'
+        <if test='searchTestUse != null and searchTestUse != ""'>
+            and TT.USE_YN = #{searchTestUse}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "TEST_NAME"'>
+                and TT.TEST_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "TEST_CODE"'>
+                and TT.TEST_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TT.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="SEQ != null and SEQ != ''">
+            and TT.TEST_SEQ = #{SEQ}
+        </if>
+        order by TT.REG_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+
+    </select>
+
+    <insert id="testRegist" parameterType="Map">
+       {CALL TEST_REGIST(#{CODE_TYPE}, #{TEST_NAME}, #{USE_YN}, #{REG_ID})};
+    </insert>
+
+    <update id="testDelete" parameterType="Map">
+        update TB_TEST
+        set DLT_YN = 'Y',
+            DLT_ID =#{DLT_ID},
+            DLT_DATE = NOW()
+        where TEST_SEQ = #{TEST_SEQ};
+    </update>
+
+    <update id="testUpdate" parameterType="Map">
+        update TB_TEST
+        set
+        <if test="TEST_NAME != null and TEST_NAME != ''">TEST_NAME = #{TEST_NAME}</if>
+        <if test="USE_YN != null and USE_YN != ''">, USE_YN = #{USE_YN}</if>
+                         , UPDATE_DATE = NOW()
+                         , UPDATE_ID = #{UPDATE_ID}
+        where TEST_SEQ = #{TEST_SEQ};
+    </update>
+
+    <update id="testUseYn" parameterType="Map">
+        update TB_TEST
+        set USE_YN = if(USE_YN = 'Y', 'N', 'Y')
+        where TEST_SEQ = #{TEST_SEQ};
+    </update>
+
+</mapper>

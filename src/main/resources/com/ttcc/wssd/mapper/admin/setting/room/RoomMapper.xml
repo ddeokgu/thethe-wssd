@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.room.RoomMapper">
+
+    <select id="roomCount" resultType="Integer" >
+        select count(*) from TB_ROOM
+        where DLT_YN != 'Y';
+    </select>
+
+    <select id="roomList" resultType="Record" parameterType="Map">
+        select TR.ROOM_SEQ ,TR.ROOM_CODE ,TR.ROOM_NAME ,TR.USE_YN ,TR.REG_ID ,DATE_FORMAT(TR.REG_DATE, '%Y-%m-%d') as REG_DATE, TC.CHANNEL_NAME, TC.CHANNEL_CODE,
+               TR.SEAT_COUNT
+        from tb_room TR
+        inner join tb_channel TC
+        on TR.CHANNEL_CODE = TC.CHANNEL_CODE
+        where TR.DLT_YN != 'Y'
+        <if test='searchRoomUse != null and searchRoomUse != ""'>
+            and TR.USE_YN = #{searchRoomUse}
+        </if>
+        <if test='searchChannel != null and searchChannel != ""'>
+            and TC.CHANNEL_CODE = #{searchChannel}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "ROOM_NAME"'>
+                and TR.ROOM_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "ROOM_CODE"'>
+                and TR.ROOM_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TR.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="ROOM_SEQ != null and ROOM_SEQ != ''">
+            and TR.ROOM_SEQ = #{ROOM_SEQ}
+        </if>
+        order by TR.ROOM_SEQ desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+
+   <select id="roomRegist" parameterType="Map" resultType="String">
+       {CALL ROOM_REGIST(#{CODE_TYPE}, #{ROOM_NAME}, #{CHANNEL_CODE}, #{USE_YN}, #{SEAT_COUNT}, #{REG_ID})}
+    </select>
+
+    <update id="roomDelete" parameterType="Map">
+        update TB_ROOM set DLT_YN = 'Y', DLT_DATE=NOW(), DLT_ID = #{DLT_ID} where ROOM_SEQ = #{ROOM_SEQ};
+    </update>
+
+    <update id="roomUpdate" parameterType="Map">
+        update TB_ROOM
+        set
+        <if test="ROOM_NAME != null and ROOM_NAME != ''">ROOM_NAME = #{ROOM_NAME}</if>
+        <if test="CHANNEL_CODE != null and CHANNEL_CODE != ''">, CHANNEL_CODE = #{CHANNEL_CODE}</if>
+        <if test="USE_YN != null and USE_YN != ''">, USE_YN = #{USE_YN}</if>
+                         , UPDATE_ID = #{UPDATE_ID}
+                         , UPDATE_DATE = NOW()
+        where ROOM_SEQ = #{ROOM_SEQ};
+    </update>
+
+    <update id="roomUseYn" parameterType="Map">
+        update TB_ROOM
+        set USE_YN = if(USE_YN = 'Y', 'N', 'Y')
+        where ROOM_SEQ = #{ROOM_SEQ};
+    </update>
+
+</mapper>

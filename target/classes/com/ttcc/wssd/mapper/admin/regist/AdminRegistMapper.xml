@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.regist.AdminRegistMapper">
+
+    <select id="adminRegistCount" resultType="Integer">
+        select count(*) from tb_regist where DLT_YN != 'Y';
+    </select>
+
+    <select id="adminRegistList" parameterType="Map" resultType="Record">
+        select tr.REGIST_SEQ,  DATE_FORMAT(tr.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE, tr.REGIST_MU_TYPE,
+               tr.REGIST_MU_NAME, tr.REGIST_MU_CD, tr.REGIST_FEE_TYPE, tr.REGIST_MU_SCHOOL, tr.REGIST_MU_GENDER,
+               tr.REGIST_MU_GRADE, tr.REGIST_EXAM, tr.REGIST_EXAM_DES, tr.REGIST_PARENT_PHONE, tr.REGIST_MU_PHONE,
+               tr.REGIST_TEST_FIRST, tr.REGIST_TEST_SECOND, DATE_FORMAT(tr.REGIST_START_DATE, '%Y-%m-%d') as REGIST_START_DATE,
+               DATE_FORMAT(tr.REGIST_END_DATE, '%Y-%m-%d') as REGIST_END_DATE , tr.REGIST_CHANNEL, tr.REGIST_ROOM, tr.REGIST_SEAT, tr.REGIST_PAY_TYPE,
+               tr.REGIST_TYPE, tr.REGIST_PHONE_TYPE, DATE_FORMAT(tr.REG_DATE, '%Y-%m-%d') as REG_DATE , tr.STUDENT_CHECK, tr.REGIST_MU_ID,
+               tc.CHANNEL_NAME, tr2.ROOM_NAME, ts.SEAT_NAME
+        from tb_regist tr
+                 inner join tb_channel tc
+                            on tc.CHANNEL_CODE = tr.REGIST_CHANNEL
+                 inner join tb_room tr2
+                            on tr2.ROOM_CODE = tr.REGIST_ROOM
+                 left outer join  tb_seat ts
+                            on ts.SEAT_SEQ = tr.REGIST_SEAT
+                 inner join tb_fee tf
+                            on tr.REGIST_FEE_TYPE = tf.FEE_CODE
+        where tr.DLT_YN != 'Y'
+        <if test='searchChannel != null and searchChannel != ""'>
+            and tr.REGIST_CHANNEL = #{searchChannel}
+            <if test='searchText != null and searchText != ""'>
+                <if test='search_type == "REGIST_MU_ID"'>
+                    and tr.REGIST_MU_ID like (CONCAT('%', #{searchText}, '%'))
+                </if>
+                <if test='search_type == "REGIST_MU_NAME"'>
+                    and tr.REGIST_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+                </if>
+            </if>
+        </if>
+        <if test="REGIST_MU_TYPE != null and REGIST_MU_TYPE != ''">
+            and tr.REGIST_MU_TYPE = #{REGIST_MU_TYPE}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "REGIST_MU_ID"'>
+                and tr.REGIST_MU_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REGIST_MU_NAME"'>
+                and tr.REGIST_MU_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="REGIST_SEQ != null and REGIST_SEQ != ''">
+            and tr.REGIST_SEQ = #{REGIST_SEQ}
+        </if>
+        order by tr.REG_DATE desc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <insert id="adminRegistInsert" parameterType="Map">
+        <if test="REGIST_FIRST_DATE == null || REGIST_FIRST_DATE == ''">
+
+        </if>
+        <choose>
+            <when test="REGIST_FIRST_DATE != 'null' and REGIST_FIRST_DATE != ''">
+                insert into TB_REGIST (
+                REGIST_FIRST_DATE,
+                REGIST_MU_NAME,
+                REGIST_MU_CD,
+                REGIST_MU_ID,
+                REGIST_MU_GENDER,
+                REGIST_MU_PHONE,
+                REGIST_FEE_TYPE,
+                REGIST_MU_SCHOOL,
+                REGIST_MU_GRADE,
+                REGIST_EXAM,
+                REGIST_EXAM_DES,
+                REGIST_PHONE_TYPE,
+                REGIST_PARENT_PHONE,
+                REGIST_TEST_FIRST,
+                REGIST_TEST_SECOND,
+                REGIST_START_DATE,
+                REGIST_END_DATE,
+                REGIST_CHANNEL,
+                REGIST_ROOM,
+                REGIST_MU_TYPE,
+                REGIST_TYPE,
+                STUDENT_CHECK,
+                REG_ID,
+                REG_DATE,
+                REGIST_PAY_TYPE,
+                PAY_YN
+                )
+                values (
+                        #{REGIST_FIRST_DATE},
+                        #{REGIST_MU_NAME},
+                        #{REGIST_MU_CD},
+                        #{REGIST_MU_ID},
+                        #{REGIST_MU_GENDER},
+                        #{REGIST_MU_PHONE},
+                        #{REGIST_FEE_TYPE},
+                        #{REGIST_MU_SCHOOL},
+                        #{REGIST_MU_GRADE},
+                        #{REGIST_EXAM},
+                        #{REGIST_EXAM_DES},
+                        #{REGIST_PHONE_TYPE},
+                        #{REGIST_PARENT_PHONE},
+                        #{REGIST_TEST_FIRST},
+                        #{REGIST_TEST_SECOND},
+                        #{REGIST_START_DATE},
+                        #{REGIST_END_DATE},
+                        #{REGIST_CHANNEL},
+                        #{REGIST_ROOM},
+                        #{REGIST_MU_TYPE},
+                        #{REGIST_TYPE},
+                        #{STUDENT_CHECK},
+                        #{REG_ID},
+                        NOW(),
+                        #{REGIST_PAY_TYPE},
+                        #{PAY_YN}
+                )
+            </when>
+            <otherwise>
+                {CALL REGIST_ADMIN_INSERT(
+                        #{REGIST_MU_NAME},
+                        #{REGIST_MU_CD},
+                        #{REGIST_MU_ID},
+                        #{REGIST_MU_GENDER},
+                        #{REGIST_MU_PHONE},
+                        #{REGIST_FEE_TYPE},
+                        #{REGIST_MU_SCHOOL},
+                        #{REGIST_MU_GRADE},
+                        #{REGIST_EXAM},
+                        #{REGIST_EXAM_DES},
+                        #{REGIST_PHONE_TYPE},
+                        #{REGIST_PARENT_PHONE},
+                        #{REGIST_TEST_FIRST},
+                        #{REGIST_TEST_SECOND},
+                        #{REGIST_START_DATE},
+                        #{REGIST_END_DATE},
+                        #{REGIST_CHANNEL},
+                        #{REGIST_ROOM},
+                        #{REGIST_MU_TYPE},
+                        #{REGIST_TYPE},
+                        #{STUDENT_CHECK},
+                        #{REG_ID},
+                        #{REGIST_PAY_TYPE},
+                        #{PAY_YN}
+                        )}
+            </otherwise>
+        </choose>
+    </insert>
+
+    <update id="adminRegistUpdate" parameterType="Map">
+        update tb_regist
+        set
+        <if test="REGIST_FEE_TYPE != null and REGIST_FEE_TYPE != ''">REGIST_FEE_TYPE = #{REGIST_FEE_TYPE},</if>
+        <if test="REGIST_MU_SCHOOL != null and REGIST_MU_SCHOOL != ''">REGIST_MU_SCHOOL = #{REGIST_MU_SCHOOL},</if>
+        <if test="REGIST_MU_NAME != null and REGIST_MU_NAME != ''">REGIST_MU_NAME = #{REGIST_MU_NAME},</if>
+        <if test="REGIST_MU_GRADE != null and REGIST_MU_GRADE != ''">REGIST_MU_GRADE = #{REGIST_MU_GRADE},</if>
+        <if test="REGIST_MU_GENDER != null and REGIST_MU_GENDER != ''">REGIST_MU_GENDER = #{REGIST_MU_GENDER},</if>
+        <if test="REGIST_EXAM != null and REGIST_EXAM != ''">REGIST_EXAM = #{REGIST_EXAM},</if>
+        <if test="REGIST_EXAM_DES != null and REGIST_EXAM_DES != ''">REGIST_EXAM_DES = #{REGIST_EXAM_DES},</if>
+        <if test="REGIST_PARENT_PHONE != null and REGIST_PARENT_PHONE != ''">REGIST_PARENT_PHONE = #{REGIST_PARENT_PHONE},</if>
+        <if test="REGIST_MU_PHONE != null and REGIST_MU_PHONE != ''">REGIST_MU_PHONE = #{REGIST_MU_PHONE},</if>
+        <if test="REGIST_TEST_FIRST != null and REGIST_TEST_FIRST != ''">REGIST_TEST_FIRST = #{REGIST_TEST_FIRST},</if>
+        <if test="REGIST_TEST_SECOND != null and REGIST_TEST_SECOND != ''">REGIST_TEST_SECOND = #{REGIST_TEST_SECOND},</if>
+        <if test="REGIST_START_DATE != null and REGIST_START_DATE != ''">REGIST_START_DATE = #{REGIST_START_DATE},</if>
+        <if test="REGIST_END_DATE != null and REGIST_END_DATE != ''">REGIST_END_DATE = #{REGIST_END_DATE},</if>
+        <if test="REGIST_MU_TYPE != null and REGIST_MU_TYPE != ''">REGIST_MU_TYPE = #{REGIST_MU_TYPE},</if>
+        <if test="REGIST_CHANNEL != null and REGIST_CHANNEL != ''">REGIST_CHANNEL = #{REGIST_CHANNEL},</if>
+        <if test="REGIST_ROOM != null and REGIST_ROOM != ''">REGIST_ROOM = #{REGIST_ROOM},</if>
+        <if test="UPDATE_ID != null and UPDATE_ID != ''">UPDATE_ID = #{UPDATE_ID},</if>
+        <if test="REGIST_PAY_TYPE != null and REGIST_PAY_TYPE != ''">REGIST_PAY_TYPE = #{REGIST_PAY_TYPE},</if>
+        UPDATE_DATE = NOW()
+        where REGIST_SEQ = #{REGIST_SEQ}
+          and DLT_YN != 'Y';
+
+    </update>
+
+    <update id="registSeatUpdate" parameterType="Map">
+        update tb_regist
+        set REGIST_SEAT = #{REGIST_SEAT}
+        where REGIST_SEQ = #{REGIST_SEQ}
+            and DLT_YN != 'Y';
+    </update>
+
+    <update id="adminRegistDelete" parameterType="Map">
+        update tb_regist
+        set DLT_YN = 'Y',
+            DLT_DATE = NOW()
+        where REGIST_SEQ = #{REGIST_SEQ};
+    </update>
+
+    <select id="getMemberCd" parameterType="Map" resultType="Record">
+        select MU_CD, DATE_FORMAT(MU_REGIST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE, MU_NAME
+        from tb_member_user
+        where MU_ID = #{REGIST_MU_ID}
+          and DLT_YN != 'Y';
+    </select>
+
+    <select id="adminSearchMuId" parameterType="Map" resultType="Record">
+        select MU_CD, DATE_FORMAT(MU_REGIST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE, MU_NAME, MU_PHONE, MU_GENDER, MU_ID
+        from tb_member_user
+        where MU_ID like  (CONCAT('%', #{searchText}, '%'))
+          and DLT_YN != 'Y'
+          and MB_TYPE != 'M';
+    </select>
+
+    <update id="registCancelUpdate" parameterType="Map">
+        update TB_REGIST
+        set DLT_YN = 'Y'
+        where PAY_CODE = #{payCode}
+    </update>
+
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.LoginMapper">
+
+    <select id="selectMemberInfo" parameterType="String" resultType="com.ttcc.wssd.common.security.UserInfo">
+        SELECT MU_ID as id,
+               MU_PW as password,
+               MB_TYPE as mbType,
+               DATE_FORMAT(MU_REGIST_DATE, '%Y-%m-%d') as registDate,
+               MU_NAME as name,
+               MU_GENDER as gender,
+               MU_BIRTH as birth,
+               MU_ZIP as zip,
+               MU_ADDRESS as address,
+               MU_PHONE as phone,
+               MU_FUNNEL as funnelType,
+               MU_FUNNEL_DES as funnelDes,
+               MU_EMAIL as mbEmail,
+               MU_IS_PERMIT as mbIsPermit,
+               MU_IS_LIVE as mbIsLive,
+               MU_IS_SLEEP as mbIsSleep,
+               MU_CD as mbCd,
+               REG_DATE as regDate
+        FROM TB_MEMBER_USER
+        WHERE MU_ID = #{memberId}
+          AND DLT_YN != 'Y'
+          
+    </select>
+    
+    
+    <select id="masterInfo" parameterType="String" resultType="com.ttcc.wssd.common.security.UserInfo">
+       SELECT
+                manager_seq as managerSeq
+              , manager_name as name
+             , auth_group_seq
+              , use_yn as useYn
+        FROM MANAGER_LIST 
+              
+        WHERE
+              MB_CD = #{mbCd} 
+    </select>
+    
+    <!-- 모든 회원 로그인 시 접속 기록 갱신  -->
+	  <!-- <update id="uptMbrAcsRec" parameterType="String"> -->
+	  <update id="uptMbrAcsRec" statementType="CALLABLE" parameterType="String">
+	       {  call upt_Mbr_Acs_Rec (
+            #{mbCd} 
+            )
+        }
+	  </update>
+	  
+	  
+	  <!-- 관리자 메뉴 -->
+    <select id="Manager_Menu_S4_Str" statementType="CALLABLE" parameterType="int" resultType="com.ttcc.wssd.common.model.MenuItem">
+        {  call Manager_Menu_S4_Str (
+            #{authGroupSeq}
+            )
+        }
+    </select>
+
+</mapper>

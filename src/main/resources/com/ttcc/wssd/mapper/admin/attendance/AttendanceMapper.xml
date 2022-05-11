@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.attendance.AttendanceMapper">
+
+    <select id="attendanceCount" parameterType="Map" resultType="Integer">
+        select count(*)
+        from tb_attendance ta
+            where ta.ATTENDANCE_DATE = #{DATE}
+            and ta.ATTENDANCE_ROOM = #{searchRoom}
+            and ta.ATTENDANCE_CHANNEL = #{searchChannel}
+    </select>
+
+    <!--사용안함-->
+    <select id="attendanceList" parameterType="Map" resultType="Record">
+        select tmu.MU_CD, tmu.MU_NAME, tmu.MU_PHONE, tS.SCHOOL_NAME, tr.REGIST_MU_GRADE, DATE_FORMAT(tr.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE
+        from tb_member_user tmu
+        left outer join tb_regist tr
+        on tmu.MU_CD = tr.REGIST_MU_CD
+            and tr.DLT_YN != 'Y'
+            and #{DATE} between tr.REGIST_START_DATE and tr.REGIST_END_DATE
+        left outer join tb_school ts
+        on tr.REGIST_MU_SCHOOL = ts.SCHOOL_CODE
+            and ts.DLT_YN != 'Y'
+        inner join tb_attendance ta
+        on tr.REGIST_MU_CD = ta.ATTENDANCE_MU_CD
+            and ta.ATTENDANCE_DATE = #{DATE}
+        where tmu.DLT_YN != 'Y'
+            and tmu.MB_TYPE != 'M'
+        <if test='searchChannel != null and searchChannel != ""'>
+            and tr.REGIST_CHANNEL = #{searchChannel}
+        </if>
+        <if test='searchRoom != null and searchRoom != ""' >
+            and tr.REGIST_ROOM = #{searchRoom}
+        </if>
+        order by tr.REGIST_SEAT asc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <select id="userAttendanceList" parameterType="Map" resultType="Record">
+        select ta.*, ts.SEAT_NAME, tmu.MU_NAME, tmu.MU_PHONE, tmu.MU_PHONE, tr.REGIST_MU_GRADE, tr.REGIST_ROOM,
+               ts2.SCHOOL_NAME, DATE_FORMAT(tr.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE
+        from tb_attendance ta
+        left outer join tb_seat ts
+        on ta.ATTENDANCE_SEAT = ts.SEAT_SEQ
+        and ts.DLT_YN != 'Y'
+        left outer join tb_member_user tmu
+        on ta.ATTENDANCE_MU_CD = tmu.MU_CD
+        and tmu.DLT_YN != 'Y'
+        left outer join tb_regist tr
+        on tr.REGIST_MU_CD = ta.ATTENDANCE_MU_CD
+        and tr.DLT_YN != 'Y'
+            and tr.REGIST_CHANNEL = #{searchChannel}
+            and tr.REGIST_ROOM = #{searchRoom}
+        left outer join tb_school ts2
+        on ts2.SCHOOL_CODE = tr.REGIST_MU_SCHOOL
+        where ta.ATTENDANCE_DATE = #{DATE}
+          and ta.ATTENDANCE_CHANNEL = #{searchChannel}
+          and ta.ATTENDANCE_ROOM = #{searchRoom}
+        <if test="searchText != null and searchText != ''" >
+            and tmu.MU_NAME like (CONCAT('%', #{searchText}, '%'))
+        </if>
+        order by ts.SEAT_SEQ asc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+    </select>
+
+    <select id="userAttendance" parameterType="Map" resultType="Map">
+        select *
+        from tb_attendance
+        where ATTENDANCE_DATE = #{DATE}
+          and ATTENDANCE_CHANNEL = #{CHANNEL_CODE}
+          and ATTENDANCE_MU_CD = #{MU_CD}
+          and ATTENDANCE_ROOM = #{ROOM_CODE}
+    </select>
+
+    <select id="attendanceCheckList" parameterType="Map" resultType="Record">
+        select *
+        from tb_attendance
+        where ATTENDANCE_MU_CD = #{MU_CD}
+        and ATTENDANCE_DATE = #{DATE}
+    </select>
+
+    <update id="attendanceUpdate" parameterType="Map">
+        update TB_ATTENDANCE
+        set
+            <if test="C0 != null and C0 != ''">C0 = #{C0},</if>
+            <if test="C1 != null and C1 != ''">C1 = #{C1},</if>
+            <if test="C2 != null and C2 != ''">C2 = #{C2},</if>
+            <if test="C3 != null and C3 != ''">C3 = #{C3},</if>
+            <if test="C4 != null and C4 != ''">C4 = #{C4},</if>
+            <if test="C5 != null and C5 != ''">C5 = #{C5},</if>
+            <if test="C6 != null and C6 != ''">C6 = #{C6},</if>
+            <if test="C7 != null and C7 != ''">C7 = #{C7},</if>
+            <if test="C8 != null and C8 != ''">C8 = #{C8},</if>
+            <if test="C9 != null and C9 != ''">C9 = #{C9},</if>
+            <if test="C10 != null and C10 != ''">C10 = #{C10},</if>
+            <if test="C11 != null and C11 != ''">C11 = #{C11},</if>
+            <if test="C12 != null and C12 != ''">C12 = #{C12},</if>
+            <if test="C13 != null and C13 != ''">C13 = #{C13},</if>
+            <if test="C14 != null and C14 != ''">C14 = #{C14},</if>
+            <if test="C15 != null and C15 != ''">C15 = #{C15},</if>
+            <if test="C16 != null and C16 != ''">C16 = #{C16},</if>
+            <if test="C0_EXC != null and C0_EXC != ''">C0_EXC = #{C0_EXC},</if>
+            <if test="C1_EXC != null and C1_EXC != ''">C1_EXC = #{C1_EXC},</if>
+            <if test="C2_EXC != null and C2_EXC != ''">C2_EXC = #{C2_EXC},</if>
+            <if test="C3_EXC != null and C3_EXC != ''">C3_EXC = #{C3_EXC},</if>
+            <if test="C4_EXC != null and C4_EXC != ''">C4_EXC = #{C4_EXC},</if>
+            <if test="C5_EXC != null and C5_EXC != ''">C5_EXC = #{C5_EXC},</if>
+            <if test="C6_EXC != null and C6_EXC != ''">C6_EXC = #{C6_EXC},</if>
+            <if test="C7_EXC != null and C7_EXC != ''">C7_EXC = #{C7_EXC},</if>
+            <if test="C8_EXC != null and C8_EXC != ''">C8_EXC = #{C8_EXC},</if>
+            <if test="C9_EXC != null and C9_EXC != ''">C9_EXC = #{C9_EXC},</if>
+            <if test="C10_EXC != null and C10_EXC != ''">C10_EXC = #{C10_EXC},</if>
+            <if test="C11_EXC != null and C11_EXC != ''">C11_EXC = #{C11_EXC},</if>
+            <if test="C12_EXC != null and C12_EXC != ''">C12_EXC = #{C12_EXC},</if>
+            <if test="C13_EXC != null and C13_EXC != ''">C13_EXC = #{C13_EXC},</if>
+            <if test="C14_EXC != null and C14_EXC != ''">C14_EXC = #{C14_EXC},</if>
+            <if test="C15_EXC != null and C15_EXC != ''">C15_EXC = #{C15_EXC},</if>
+            <if test="C16_EXC != null and C16_EXC != ''">C16_EXC = #{C16_EXC},</if>
+            UPDATE_DATE = #{ATTENDANCE_DATE}
+        where ATTENDANCE_MU_CD = #{ATTENDANCE_MU_CD}
+          and ATTENDANCE_DATE = #{ATTENDANCE_DATE}
+          and ATTENDANCE_ROOM = #{ATTENDANCE_ROOM}
+    </update>
+
+    <update id="attendanceSeatUpdate" parameterType="Map">
+        update tb_attendance
+        set ATTENDANCE_SEAT = #{REGIST_SEAT}
+        where REGIST_SEQ = #{REGIST_SEQ}
+            and ATTENDANCE_DATE >= #{DATE}
+    </update>
+
+</mapper>

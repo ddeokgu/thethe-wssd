@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ttcc.wssd.common.app.mapper.admin.setting.fee.FeeMapper">
+
+
+    <select id="feeCount" resultType="Integer" >
+        select count(*) from TB_FEE TF
+        where TF.DLT_YN != 'Y'
+        <if test='searchFeeUseYn != null and searchFeeUseYn != ""'>
+            and TF.USE_YN = #{searchFeeUseYn}
+        </if>
+        <if test='searchChannel != null and searchChannel != ""'>
+            and TF.CHANNEL_CODE = #{searchChannel}
+        </if>
+        <if test='REGIST_FEE_TYPE != null and REGIST_FEE_TYPE != ""'>
+            and TF.FEE_CODE = #{REGIST_FEE_TYPE}
+        </if>
+    </select>
+
+    <select id="feeList" resultType="Record">
+        select TF.FEE_SEQ, TF.FEE_CODE, TF.FEE_NAME, TF.FEE_SET, TF.CHANNEL_CODE, TF.MANAGER_SET, TF.FEE_EXC, TF.FEE_EXC_SET,TC.CHANNEL_NAME, TF.USE_YN, TF.REG_ID, DATE_FORMAT(TF.REG_DATE, '%Y-%m-%d') as REG_DATE
+        from TB_FEE TF
+        left outer join TB_CHANNEL TC
+        on TF.CHANNEL_CODE = TC.CHANNEL_CODE
+        where TF.DLT_YN != 'Y'
+        <if test='searchFeeUseYn != null and searchFeeUseYn != ""'>
+            and TF.USE_YN = #{searchFeeUseYn}
+        </if>
+        <if test='searchChannel != null and searchChannel != ""'>
+            and TF.CHANNEL_CODE = #{searchChannel}
+        </if>
+        <if test='REGIST_FEE_TYPE != null and REGIST_FEE_TYPE != ""'>
+            and TF.FEE_CODE = #{REGIST_FEE_TYPE}
+        </if>
+        <if test='searchText != null and searchText != ""'>
+            <if test='search_type == "FEE_NAME"'>
+                and TF.FEE_NAME like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "FEE_CODE"'>
+                and TF.FEE_CODE like (CONCAT('%', #{searchText}, '%'))
+            </if>
+            <if test='search_type == "REG_ID"'>
+                and TF.REG_ID like (CONCAT('%', #{searchText}, '%'))
+            </if>
+        </if>
+        <if test="FEE_SEQ != null and FEE_SEQ != ''">
+            and TF.FEE_SEQ = #{FEE_SEQ}
+        </if>
+        order by TF.CHANNEL_CODE desc, TF.FEE_NAME asc
+        LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
+
+    </select>
+
+    <insert id="feeRegist" parameterType="Map">
+       {CALL FEE_REGIST(#{CODE_TYPE}, #{FEE_NAME}, #{FEE_SET}, #{MANAGER_SET}, #{FEE_EXC_SET}, #{FEE_EXC}, #{CHANNEL_CODE}, #{USE_YN}, #{REG_ID})};
+    </insert>
+
+    <update id="feeDelete" parameterType="Map">
+        update TB_FEE
+        set DLT_YN = 'Y',
+            DLT_ID =#{DLT_ID},
+            DLT_DATE = NOW()
+        where FEE_SEQ = #{FEE_SEQ};
+    </update>
+
+    <update id="feeUpdate" parameterType="Map">
+        update TB_FEE
+        set
+          <if test="FEE_NAME != null and FEE_NAME != ''">FEE_NAME = #{FEE_NAME}</if>
+        <if test="FEE_SET != null and FEE_SET != ''">, FEE_SET = #{FEE_SET}</if>
+        <if test="CHANNEL_CODE != null and CHANNEL_CODE != ''">, CHANNEL_CODE = #{CHANNEL_CODE}</if>
+        <if test="MANAGER_SET != null and MANAGER_SET != ''">, MANAGER_SET = #{MANAGER_SET}</if>
+        <if test="FEE_EXC_SET != null and FEE_EXC_SET != ''">, FEE_EXC_SET = #{FEE_EXC_SET}</if>
+        <if test="FEE_EXC != null and FEE_EXC != ''">, FEE_EXC = #{FEE_EXC}</if>
+        <if test="USE_YN != null and USE_YN != ''">, USE_YN = #{USE_YN}</if>
+                         , UPDATE_DATE = NOW()
+                         , UPDATE_ID = #{UPDATE_ID}
+        where FEE_SEQ = #{FEE_SEQ};
+    </update>
+
+    <update id="feeUseYn" parameterType="Map">
+        update TB_FEE
+        set
+            <if test='GUBUN == "useYn"'>
+                USE_YN = if(USE_YN = 'Y', 'N', 'Y')
+            </if>
+
+        <if test='GUBUN == "managerSet"'>
+            MANAGER_SET = if(MANAGER_SET = 'Y', 'N', 'Y')
+        </if>
+        where FEE_SEQ = #{FEE_SEQ};
+    </update>
+
+</mapper>
