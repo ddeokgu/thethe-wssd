@@ -36,7 +36,7 @@
         LIMIT #{startIndex, jdbcType=INTEGER}, #{rowsPerPage, jdbcType=INTEGER};
     </select>
 
-    <select id="userAttendanceList" parameterType="Map" resultType="Record">
+    <select id="adminUserAttendanceList" parameterType="Map" resultType="Record">
         select ta.*, ts.SEAT_NAME, tmu.MU_NAME, tmu.MU_PHONE, tmu.MU_PHONE, tr.REGIST_MU_GRADE, tr.REGIST_ROOM,
                ts2.SCHOOL_NAME, DATE_FORMAT(tr.REGIST_FIRST_DATE, '%Y-%m-%d') as REGIST_FIRST_DATE
         from tb_attendance ta
@@ -119,7 +119,7 @@
             UPDATE_DATE = #{ATTENDANCE_DATE}
         where ATTENDANCE_MU_CD = #{ATTENDANCE_MU_CD}
           and ATTENDANCE_DATE = #{ATTENDANCE_DATE}
-          and ATTENDANCE_ROOM = #{ATTENDANCE_ROOM}
+          and ATTENDANCE_ROOM = #{ROOM_CODE}
     </update>
 
     <update id="attendanceSeatUpdate" parameterType="Map">

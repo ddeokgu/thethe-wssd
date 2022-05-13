@@ -15,7 +15,7 @@ public interface AttendanceService {
 
     Map userAttendance(Map paramMap);
 
-    List<Record> userAttendanceList(Map paramMap);
+    List<Record> adminUserAttendanceList(Map paramMap);
 
     void attendanceUpdate(Map paramMap);
 

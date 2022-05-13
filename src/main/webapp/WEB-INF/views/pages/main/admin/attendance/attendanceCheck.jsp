@@ -288,7 +288,7 @@
                 <form id="form_attendance" name="formAttendance" method="post" action="/">
                     <input type ="hidden" id="modal_date" name="ATTENDANCE_DATE" value="">
                     <input type ="hidden" id="modal_mb_cd" name="ATTENDANCE_MU_CD" value="">
-                    <input type = "hidden" id="modal_mb_room" name="ATTENDANCE_ROOM" value="">
+                    <input type = "hidden" id="modal_mb_room" name="ROOM_CODE" value="">
                     <div class="modal_get">
                         <div class="attend_table">
                             <div class="att att_01">

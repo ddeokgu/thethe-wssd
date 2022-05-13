@@ -12,7 +12,9 @@
         on ta.ATTENDANCE_ROOM = tr.ROOM_CODE
             and tr.DLT_YN != 'Y'
         where ta.ATTENDANCE_MU_CD = #{ATTENDANCE_MU_CD}
-          and ta.ATTENDANCE_ROOM = #{REGIST_ROOM}
+          <if test="REGIST_ROOM != '' and REGIST_ROOM != null">
+              and ta.ATTENDANCE_ROOM = #{REGIST_ROOM}
+          </if>
         and ta.ATTENDANCE_DATE between #{start} and #{end}
         order by ta.ATTENDANCE_DATE asc;
     </select>

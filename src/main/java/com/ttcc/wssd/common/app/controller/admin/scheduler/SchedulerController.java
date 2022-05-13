@@ -36,7 +36,7 @@ public class SchedulerController extends CommonController {
     AttendanceService attendanceService;
 
     @Scheduled(cron = "0 5 0 * * *")
-    //@Scheduled(cron = "0/30 * * * * *")
+    //@Scheduled(cron = "0/5 * * * * *")
     public void sampleSchedule() throws ParseException {
         System.err.println("<==================================스케줄 테스트=====================================>");
         Map paramMap = new HashMap<>();
@@ -46,16 +46,12 @@ public class SchedulerController extends CommonController {
         DayOfWeek dayOfweek = date.getDayOfWeek();
         paramMap.put("DATE", today);
         paramMap.put("DAY", dayOfweek.getDisplayName(TextStyle.NARROW, Locale.KOREAN));
-       // paramMap.put("DATE", "2022-05-08");
-       // paramMap.put("DAY", "일");
         List<Record> userList = schedulerService.getUserList(paramMap);
         List<Record> attendanceList = null;
         Map map = new HashMap();
         for (int i = 0; i < userList.size(); i++) {
             userList.get(i).put("DATE", today);
             userList.get(i).put("DAY", dayOfweek.getDisplayName(TextStyle.NARROW, Locale.KOREAN));
-           // userList.get(i).put("DATE", "2022-05-08");
-           // userList.get(i).put("DAY", "일");
             if(userList.get(i).get("REGIST_SEAT") != null) {
                 registService.attendanceInsert(userList.get(i));
             }
@@ -76,6 +72,7 @@ public class SchedulerController extends CommonController {
         Map returnMap = new HashMap();
         for (int i = 0; i < paramMap.size(); i++) {
             map = (Map) paramMap.get(i);
+            System.err.println("map = = = = " + map);
             if( map.get("OTHER_REGIST_EXC_DATE") == null || map.get("OTHER_REGIST_EXC_DATE").toString().equals("null")) {
                 for(int j = 0; j < date.length-1; j++) {
                     CHANNEL_CODE = map.get("REGIST_CHANNEL").toString();

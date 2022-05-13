@@ -40,8 +40,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<Record> userAttendanceList(Map paramMap) {
-        return attendanceMapper.userAttendanceList(paramMap);
+    public List<Record> adminUserAttendanceList(Map paramMap) {
+        return attendanceMapper.adminUserAttendanceList(paramMap);
     }
 
     @Override

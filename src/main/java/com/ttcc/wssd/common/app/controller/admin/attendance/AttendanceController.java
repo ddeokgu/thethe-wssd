@@ -85,7 +85,7 @@ public class AttendanceController extends CommonController {
         paramMap.put("totalCount", attendanceService.attendanceCount(paramMap));
 
         model.addAttribute("channelList", channelList);
-        model.addAttribute("list", attendanceService.userAttendanceList(paramMap));
+        model.addAttribute("list", attendanceService.adminUserAttendanceList(paramMap));
         model.addAttribute("pageInfo", paramMap);
 
         return "main-admin:/attendance/attendanceCheck";
@@ -126,7 +126,8 @@ public class AttendanceController extends CommonController {
             model.addAttribute("roomList",roomList);
         }
         paramMap.put("totalCount", attendanceService.attendanceCount(paramMap));
-        model.addAttribute("list", attendanceService.userAttendanceList(paramMap));
+        System.err.println("paramMap = = = "+ paramMap);
+        model.addAttribute("list", attendanceService.adminUserAttendanceList(paramMap));
         model.addAttribute("channelList", channelList);
         model.addAttribute("pageInfo", paramMap);
 

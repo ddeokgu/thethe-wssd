@@ -92,6 +92,7 @@ public class UserAttendanceController extends CommonController {
         dateMap.put("select_month", start.toString().split("-")[1]);
 
         List<Record> list = userAttendanceService.userAttendanceList(paramMap);
+        System.err.println("paramMap = = " + paramMap);
 
         model.addAttribute("pageInfo", paramMap);
 

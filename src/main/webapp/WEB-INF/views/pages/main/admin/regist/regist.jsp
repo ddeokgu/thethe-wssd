@@ -1395,6 +1395,10 @@
     //// 좌석 선택 시 좌석 변경
     function seat_update(el,seat_seq,regist_seq) {
         let status = $(el).parent();
+        if(status.hasClass('status_M')) {
+            alert("현재 사용중인 좌석입니다.")
+            return false;
+        }
         if (status.hasClass('status_N')) {
             alert("사용불가인 좌석입니다.");
             return false;

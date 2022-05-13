@@ -152,7 +152,7 @@
                             <th class="num">#</th>
                             <th>학교명</th>
                             <th class="m_hide">학교코드</th>
-                            <th class="m_hide">주소</th>
+                            <th class="m_hide">학교주소</th>
                             <th class="m_hide">전화번호</th>
                             <th class="m_hide">사용설정</th>
                             <th class="m_hide">등록자</th>
@@ -316,8 +316,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 </div>

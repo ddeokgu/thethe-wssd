@@ -19,7 +19,7 @@ public interface AttendanceMapper {
 
     Map userAttendance(Map paramMap);
 
-    List <Record> userAttendanceList(Map paramMap);
+    List <Record> adminUserAttendanceList(Map paramMap);
 
     void attendanceUpdate(Map paramMap);
 
